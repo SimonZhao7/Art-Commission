@@ -99,7 +99,7 @@ export default function SetupForm({ uid }: { uid: string }) {
 
   return (
     <form>
-      <section className="flex gap-5">
+      <section className="md:flex gap-5">
         <div className="flex-1">
           <Input
             label="Username"
@@ -187,7 +187,7 @@ export default function SetupForm({ uid }: { uid: string }) {
           />
         </div>
       </section>
-      <section className="flex gap-5">
+      <section className="md:flex gap-5">
         <div className="flex-1">
           <Input
             label="First Name"

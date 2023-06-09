@@ -19,8 +19,8 @@ export default async function FinishSetup({ params }: Props) {
     }
     
     return (
-        <main className='mx-auto max-w-2xl p-10'>
-            <h1 className="text-2xl mb-10">Complete your account setup.</h1>
+        <main className='mx-auto max-w-2xl 2xl:max-w-4xl p-10'>
+            <h1 className="text-2xl mb-16">Complete your account setup.</h1>
             <SetupForm uid={params.id} />
         </main>
     )
