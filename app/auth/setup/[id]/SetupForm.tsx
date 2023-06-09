@@ -8,12 +8,20 @@ import Input from "@/components/Input";
 // Firebase
 import { auth, db } from "@/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { setDoc, doc, addDoc, Timestamp, collection } from "firebase/firestore";
+import {
+  setDoc,
+  doc,
+  addDoc,
+  Timestamp,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-// Util
-import { randomUUID } from "crypto";
 // Icons
 import { LuImagePlus } from "react-icons/lu";
+import { CgDanger } from "react-icons/cg";
 
 interface FormFields {
   username: string;
@@ -30,7 +38,7 @@ export default function SetupForm({ uid }: { uid: string }) {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<FormFields>({ mode: "onBlur" });
+  } = useForm<FormFields>({ mode: "onBlur", reValidateMode: "onBlur" });
   const uploadedImage = watch("profileImage");
 
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -46,11 +54,17 @@ export default function SetupForm({ uid }: { uid: string }) {
     const storage = getStorage();
     const storageRef = ref(
       storage,
-      `profile-images/${randomUUID()}-${profileImage!.name}`
+      `profile-images/${crypto.randomUUID()}-${profileImage!.name}`
     );
 
     await uploadBytes(storageRef, profileImage!);
     const url = await getDownloadURL(storageRef);
+
+    const ratingRef = await addDoc(collection(db, "ratings"), {
+      userId: uid,
+      avgRating: 0,
+      userRatings: [],
+    });
 
     await setDoc(doc(db, "users", uid), {
       username,
@@ -59,21 +73,29 @@ export default function SetupForm({ uid }: { uid: string }) {
       firstName,
       lastName,
       profileImage: url,
-      ratingId: "",
+      ratingId: ratingRef.id,
       chatIds: [],
       socialIds: [],
       bio: "",
       lastOnline: Timestamp.now(),
       dateCreated: Timestamp.now(),
     });
-
-    await addDoc(collection(db, "ratings"), {
-      userId: uid,
-      avgRating: 0,
-      userRatings: [],
-    });
     router.push("/");
   });
+
+  const lengthCheck = (
+    value: string,
+    fieldName: string,
+    min: number,
+    max: number
+  ) => {
+    if (value.length < min) {
+      return `${fieldName} is too short`;
+    } else if (value.length > max) {
+      return `${fieldName} is too long`;
+    }
+    return true;
+  };
 
   return (
     <form>
@@ -89,13 +111,25 @@ export default function SetupForm({ uid }: { uid: string }) {
                 value: true,
                 message: "You must provide a username",
               },
-              minLength: {
-                value: 8,
-                message: "Username is too short",
+              pattern: {
+                value: /^\S+$/,
+                message: "Username may not contain spaces",
               },
-              maxLength: {
-                value: 50,
-                message: "Username is too long",
+              validate: {
+                length: (value) => lengthCheck(value, "Username", 8, 50),
+                exists: (value) => {
+                  return getDocs(
+                    query(
+                      collection(db, "users"),
+                      where("username", "==", value)
+                    )
+                  ).then((res) => {
+                    if (res.empty) {
+                      return true;
+                    }
+                    return "Username already exists";
+                  });
+                },
               },
             }}
           />
@@ -114,9 +148,9 @@ export default function SetupForm({ uid }: { uid: string }) {
             }}
           />
         </div>
-        <div className="flex flex-1 items-center justify-center py-3">
+        <div className="flex flex-1 flex-col items-center justify-center py-3">
           <div
-            className="flex self-stretch aspect-square bg-light-gray rounded-lg items-center justify-center hover:bg-med-gray hover:scale-105 hover:cursor-pointer transition-all ease-out"
+            className="flex h-[125px] aspect-square bg-light-gray rounded-lg items-center justify-center hover:bg-med-gray hover:scale-105 hover:cursor-pointer transition-all ease-out"
             onClick={() => fileRef.current?.click()}
           >
             {uploadedImage != null ? (
@@ -129,6 +163,12 @@ export default function SetupForm({ uid }: { uid: string }) {
               <LuImagePlus size={50} />
             )}
           </div>
+          {errors.profileImage && (
+            <div className="text-red-500 text-sm flex items-center gap-1 mt-2">
+              <CgDanger />
+              <span>{errors.profileImage?.message}</span>
+            </div>
+          )}
           <input
             type="file"
             className="invisible w-0"
@@ -159,6 +199,11 @@ export default function SetupForm({ uid }: { uid: string }) {
                 value: true,
                 message: "You must provide a first name",
               },
+              pattern: {
+                value: /^\S+$/,
+                message: "First name may not contain spaces",
+              },
+              validate: (value) => lengthCheck(value, "First name", 0, 50),
             }}
           />
         </div>
@@ -173,6 +218,11 @@ export default function SetupForm({ uid }: { uid: string }) {
                 value: true,
                 message: "You must provide a last name",
               },
+              pattern: {
+                value: /^\S+$/,
+                message: "Last name may not contain spaces",
+              },
+              validate: (value) => lengthCheck(value, "Last name", 0, 50),
             }}
           />
         </div>

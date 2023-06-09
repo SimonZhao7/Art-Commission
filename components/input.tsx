@@ -29,7 +29,11 @@ export default function Input({
     <div className="mb-3">
       <label className="block mb-1 text-sm">{label}</label>
       <input
-        className="w-full h-10 text-sm border-gray-300 border-2 rounded-md outline-none p-3 hover:border-gray-400 transition-all duration-100"
+        className={`w-full h-10 text-sm ${
+          error ? "border-red-500" : "border-gray-300"
+        } border-2 rounded-md outline-none p-3 ${
+          !error && "hover:border-gray-400"
+        } transition-all duration-100`}
         type={type}
         placeholder={placeholder}
         {...props}
