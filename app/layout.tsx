@@ -22,12 +22,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <nav className='bg-light-gray h-14 flex items-center justify-between px-5 fixed top-0 w-full'>
+        <nav className='bg-white h-14 flex items-center justify-between px-5 fixed top-0 w-full shadow-sm'>
           <Link href={'/'}>Home</Link>
           <SearchBar />
           <div className='flex gap-4'>
             <LuInbox size={25} className='hover:cursor-pointer'/>
-            <RiChat3Line size={25} className='hover:cursor-pointer' />
+            <Link href={'/message'}><RiChat3Line size={25} className='hover:cursor-pointer' /></Link>
           </div>
         </nav>
         <div className='pt-14 h-full overflow-y-scroll'>
