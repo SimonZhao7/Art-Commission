@@ -10,6 +10,9 @@ import {
   where,
   addDoc,
   serverTimestamp,
+  doc,
+  arrayUnion,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { auth } from "@/firebase";
@@ -39,25 +42,27 @@ export default function AddMsgForm({}) {
     const q = await getDocs(
       query(collection(db, "users"), where("username", "==", username))
     );
-    const recipientId = q.docs[0].id;
-    let initMsgIds = [];
+    const recipientId = q.docs[0];
+
+    const chat = await addDoc(collection(db, "chats"), {
+      userIds: [currentUser!.uid, recipientId.id],
+      messages: []
+    });
 
     if (initMsg !== undefined) {
-      const initMsgRef = await addDoc(collection(db, "messages"), {
+      const msgRef = await addDoc(collection(db, 'messages'), {
         senderId: currentUser?.uid,
+        chatId: chat.id,
         message: initMsg,
         messageType: "TEXT",
         timestamp: serverTimestamp(),
       });
-      initMsgIds.push(initMsgRef.id);
+
+      await updateDoc(doc(db, 'chats', chat.id), {
+        messages: arrayUnion(msgRef.id)
+      })
     }
-
-    const message = await addDoc(collection(db, "chats"), {
-      userIds: [currentUser!.uid, recipientId],
-      messages: initMsgIds,
-    });
-
-    router.push(`/message/${message.id}`)
+    router.push(`/message/${chat.id}`);
   };
 
   onAuthStateChanged(auth, (user) => {
