@@ -1,13 +1,42 @@
 "use client";
 
 import { useState, useRef, ReactElement, useEffect } from "react";
+import { useRouter } from "next/navigation";
+// Firebase
+import {
+  query,
+  where,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "@/firebase";
 // React Icons
 import { FiEdit } from "react-icons/fi";
+// Components
 import AddMsgForm from "./AddMsgForm";
+// Hooks
+import { useAuth } from "@/hooks/useFirebaseUser";
+
+interface User {
+  id: string;
+  username: string;
+  profileImage: string;
+}
+
+interface Chat {
+  id: string;
+  messages: string[];
+  userIds: string[];
+  users: User[];
+}
 
 export default function Layout({ children }: { children: ReactElement }) {
   const [createFormOpen, setCreateFormOpen] = useState<boolean>(false);
-  // Fetch Data Client Side
+  const [chats, setChats] = useState<Chat[]>([]);
+  const currentUser = useAuth();
+  const router = useRouter();
   const bgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -20,6 +49,40 @@ export default function Layout({ children }: { children: ReactElement }) {
     window.addEventListener("click", handleClick);
     return () => window.removeEventListener("click", handleClick);
   }, []);
+
+  useEffect(() => {
+    let valid = true;
+    const fetchChats = async () => {
+      const q = await getDocs(
+        query(
+          collection(db, "chats"),
+          where("userIds", "array-contains", currentUser?.uid ?? "")
+        )
+      );
+
+      const chats = q.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() } as Chat;
+      });
+
+      chats.forEach((chat, i) => {
+        const userIds = chat.userIds;
+        const users: User[] = [];
+        userIds.forEach(async (uid) => {
+          const userDoc = await getDoc(doc(db, "users", uid));
+          const user = { id: userDoc.id, ...userDoc.data() } as User;
+          users.push(user);
+        });
+        chats[i].users = users;
+      });
+      if (valid) {
+        setChats(chats);
+      }
+    };
+    fetchChats();
+    return () => {
+      valid = false;
+    }
+  }, [currentUser])
 
   return (
     <main className="flex h-full">
@@ -39,6 +102,11 @@ export default function Layout({ children }: { children: ReactElement }) {
             onClick={() => setCreateFormOpen(true)}
           />
         </div>
+        {chats.map((chat) => (
+          <a key={chat.id} className='block p-5 hover:cursor-pointer' onClick={() => router.push(`/message/${chat.id}`)}>
+            <p>{chat.id}</p>
+          </a>
+        ))}
       </aside>
       {children}
     </main>

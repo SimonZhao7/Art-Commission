@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 // React Hook Form
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -15,10 +14,10 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
-import { auth } from "@/firebase";
-import { User, onAuthStateChanged } from "firebase/auth";
 // Components
 import Input from "@/components/Input";
+// Hooks
+import { useAuth } from "@/hooks/useFirebaseUser";
 
 type AddMsgFields = {
   username: string;
@@ -34,7 +33,7 @@ export default function AddMsgForm({}) {
     mode: "onBlur",
     reValidateMode: "onBlur",
   });
-  const [currentUser, setUser] = useState<User | null>();
+  const currentUser = useAuth();
   const router = useRouter();
 
   const formSubmit: SubmitHandler<AddMsgFields> = async (data) => {
@@ -64,10 +63,6 @@ export default function AddMsgForm({}) {
     }
     router.push(`/message/${chat.id}`);
   };
-
-  onAuthStateChanged(auth, (user) => {
-    setUser(user);
-  });
 
   return (
     <form
