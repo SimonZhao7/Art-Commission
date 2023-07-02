@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 // Components
 import Input from "@/components/Input";
 // Firebase
-import { auth, db } from "@/firebase";
+import { auth, db, storage } from "@/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import {
   setDoc,
@@ -18,7 +18,7 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // Icons
 import { LuImagePlus } from "react-icons/lu";
 import { CgDanger } from "react-icons/cg";
@@ -51,7 +51,6 @@ export default function SetupForm({ uid }: { uid: string }) {
   const onSubmit = handleSubmit(async (data, e) => {
     e?.preventDefault();
     const { email, username, firstName, lastName, profileImage } = data;
-    const storage = getStorage();
     const storageRef = ref(
       storage,
       `profile-images/${crypto.randomUUID()}-${profileImage!.name}`
