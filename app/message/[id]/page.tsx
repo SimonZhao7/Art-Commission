@@ -129,7 +129,7 @@ export default function Chat({ params }: Props) {
   return (
     <section className="flex-[2] flex flex-col">
       <div className="flex-1 w-full p-10 pb-20 overflow-y-scroll" ref={chatDiv}>
-        {messages.map((msg, i) => (
+        {messages.map((msg) => (
           <div
             key={msg.id}
             className={`flex mb-4 ${

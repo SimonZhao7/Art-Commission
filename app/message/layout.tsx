@@ -7,7 +7,7 @@ import {
   query,
   where,
   collection,
-  getDocs,
+  onSnapshot,
   doc,
   getDoc,
 } from "firebase/firestore";
@@ -28,7 +28,6 @@ interface User {
 interface Chat {
   id: string;
   messages: string[];
-  userIds: string[];
   users: User[];
 }
 
@@ -51,38 +50,28 @@ export default function Layout({ children }: { children: ReactElement }) {
   }, []);
 
   useEffect(() => {
-    let valid = true;
-    const fetchChats = async () => {
-      const q = await getDocs(
-        query(
-          collection(db, "chats"),
-          where("userIds", "array-contains", currentUser?.uid ?? "")
-        )
+    const q = query(
+      collection(db, "chats"),
+      where("userIds", "array-contains", currentUser?.uid ?? "")
+    );
+
+    const unsub = onSnapshot(q, async (data) => {
+      const chats = await Promise.all(
+        data.docs.map(async (d) => {
+          const userIds: string[] = d.data().userIds;
+          const users = await Promise.all(
+            userIds.map(async (uid) => {
+              const userDoc = await getDoc(doc(db, "users", uid));
+              return { id: userDoc.id, ...userDoc.data() } as User;
+            })
+          );
+          return { id: d.id, ...d.data(), users } as Chat;
+        })
       );
-
-      const chats = q.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() } as Chat;
-      });
-
-      chats.forEach((chat, i) => {
-        const userIds = chat.userIds;
-        const users: User[] = [];
-        userIds.forEach(async (uid) => {
-          const userDoc = await getDoc(doc(db, "users", uid));
-          const user = { id: userDoc.id, ...userDoc.data() } as User;
-          users.push(user);
-        });
-        chats[i].users = users;
-      });
-      if (valid) {
-        setChats(chats);
-      }
-    };
-    fetchChats();
-    return () => {
-      valid = false;
-    }
-  }, [currentUser])
+      setChats(chats);
+    });
+    return () => unsub();
+  }, [currentUser]);
 
   return (
     <main className="flex h-full">
@@ -91,7 +80,11 @@ export default function Layout({ children }: { children: ReactElement }) {
           className="flex items-center justify-center w-full h-full absolute bg-black bg-opacity-60 z-10 top-0"
           ref={bgRef}
         >
-          <AddMsgForm />
+          <AddMsgForm
+            closeForm={() => {
+              setCreateFormOpen(false);
+            }}
+          />
         </div>
       )}
       <aside className="flex-1 border-r-med-gray border-[2px]">
@@ -103,7 +96,11 @@ export default function Layout({ children }: { children: ReactElement }) {
           />
         </div>
         {chats.map((chat) => (
-          <a key={chat.id} className='block p-5 hover:cursor-pointer' onClick={() => router.push(`/message/${chat.id}`)}>
+          <a
+            key={chat.id}
+            className="flex p-5 hover:cursor-pointer"
+            onClick={() => router.push(`/message/${chat.id}`)}
+          >
             <p>{chat.id}</p>
           </a>
         ))}

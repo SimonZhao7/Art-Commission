@@ -24,7 +24,7 @@ type AddMsgFields = {
   initMsg?: string;
 };
 
-export default function AddMsgForm({}) {
+export default function AddMsgForm({ closeForm }: { closeForm: () => void }) {
   const {
     register,
     handleSubmit,
@@ -45,11 +45,11 @@ export default function AddMsgForm({}) {
 
     const chat = await addDoc(collection(db, "chats"), {
       userIds: [currentUser!.uid, recipientId.id],
-      messages: []
+      messages: [],
     });
 
     if (initMsg !== undefined) {
-      const msgRef = await addDoc(collection(db, 'messages'), {
+      const msgRef = await addDoc(collection(db, "messages"), {
         senderId: currentUser?.uid,
         chatId: chat.id,
         message: initMsg,
@@ -57,10 +57,11 @@ export default function AddMsgForm({}) {
         timestamp: serverTimestamp(),
       });
 
-      await updateDoc(doc(db, 'chats', chat.id), {
-        messages: arrayUnion(msgRef.id)
-      })
+      await updateDoc(doc(db, "chats", chat.id), {
+        messages: arrayUnion(msgRef.id),
+      });
     }
+    closeForm();
     router.push(`/message/${chat.id}`);
   };
 
