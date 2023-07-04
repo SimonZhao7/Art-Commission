@@ -15,6 +15,7 @@ import {
 import { db } from "@/firebase";
 // Components
 import AddImageForm from "./AddImageForm";
+import ChatImage from "./ChatImage";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -158,10 +159,7 @@ export default function Chat({ params }: Props) {
               </div>
             ) : (
               <div className="rounded-lg border-2 border-med-gray">
-                <img
-                  src={msg.message}
-                  className="rounded-lg w-[220px] max-h-[400px] object-cover"
-                />
+                <ChatImage src={msg.message} />
               </div>
             )}
           </div>
