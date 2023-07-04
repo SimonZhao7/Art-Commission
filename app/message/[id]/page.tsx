@@ -53,6 +53,7 @@ export default function Chat({ params }: Props) {
   const [imageModalOpen, setImageModalOpen] = useState<boolean>();
   const { register, handleSubmit, reset } = useForm<TextMsgInput>();
   const currentUser = useAuth();
+  const scrollBottom = useRef<boolean>(true);
   const chatDiv = useRef<HTMLDivElement | null>(null);
   const chatBottom = useRef<HTMLDivElement | null>(null);
 
@@ -81,11 +82,10 @@ export default function Chat({ params }: Props) {
   }, []);
 
   useEffect(() => {
-    const bottom = chatBottom.current!;
     if (
       (messages.length > 0 &&
         messages.at(-1)!.sender.id === currentUser?.uid) ||
-      Math.abs(chatDiv.current!.scrollHeight - bottom.scrollHeight) < 1
+      scrollBottom.current
     ) {
       chatBottom.current?.scrollIntoView();
     }
@@ -93,15 +93,15 @@ export default function Chat({ params }: Props) {
 
   useEffect(() => {
     const handleScrollEvent = () => {
-      const box = chatDiv!.current!;
-      console.log(
-        Math.abs(box.scrollHeight - box.clientHeight - box.scrollTop) < 1
-      );
-      if (chatDiv.current!.scrollTop < chatDiv.current!.scrollHeight - 800) {
+      const div = chatDiv.current!;
+      if (div.scrollTop < div.scrollHeight - 800) {
         setShowScrollBottom(true);
       } else {
         setShowScrollBottom(false);
       }
+
+      scrollBottom.current =
+        Math.abs(div.scrollHeight - div.clientHeight - div.scrollTop) < 1;
     };
 
     chatDiv.current?.addEventListener("scroll", handleScrollEvent);
@@ -157,8 +157,11 @@ export default function Chat({ params }: Props) {
                 </p>
               </div>
             ) : (
-              <div className="rounded-lg max-w-[220px] border-2 border-med-gray">
-                <img src={msg.message} className="rounded-lg" />
+              <div className="rounded-lg border-2 border-med-gray">
+                <img
+                  src={msg.message}
+                  className="rounded-lg w-[220px] max-h-[400px] object-cover"
+                />
               </div>
             )}
           </div>
