@@ -13,12 +13,14 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/firebase";
+// Components
+import AddImageForm from "./AddImageForm";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
 import { SubmitHandler, useForm } from "react-hook-form";
 // Icons
 import { AiOutlineSend, AiOutlinePlusCircle } from "react-icons/ai";
-import AddImageForm from "./AddImageForm";
+import { BiChevronDown } from "react-icons/bi";
 
 interface Props {
   params: {
@@ -47,10 +49,12 @@ type TextMsgInput = {
 
 export default function Chat({ params }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [showScrollBottom, setShowScrollBottom] = useState<boolean>(false);
   const [imageModalOpen, setImageModalOpen] = useState<boolean>();
-  const { register, handleSubmit } = useForm<TextMsgInput>();
+  const { register, handleSubmit, reset } = useForm<TextMsgInput>();
   const currentUser = useAuth();
-  const lastMsg = useRef<HTMLElement | null>(null);
+  const chatDiv = useRef<HTMLDivElement | null>(null);
+  const chatBottom = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const q = query(
@@ -77,10 +81,34 @@ export default function Chat({ params }: Props) {
   }, []);
 
   useEffect(() => {
-    if (lastMsg.current !== null) {
-        lastMsg.current.scrollIntoView(false)
+    const bottom = chatBottom.current!;
+    if (
+      (messages.length > 0 &&
+        messages.at(-1)!.sender.id === currentUser?.uid) ||
+      Math.abs(chatDiv.current!.scrollHeight - bottom.scrollHeight) < 1
+    ) {
+      chatBottom.current?.scrollIntoView();
     }
   }, [messages]);
+
+  useEffect(() => {
+    const handleScrollEvent = () => {
+      const box = chatDiv!.current!;
+      console.log(
+        Math.abs(box.scrollHeight - box.clientHeight - box.scrollTop) < 1
+      );
+      if (chatDiv.current!.scrollTop < chatDiv.current!.scrollHeight - 800) {
+        setShowScrollBottom(true);
+      } else {
+        setShowScrollBottom(false);
+      }
+    };
+
+    chatDiv.current?.addEventListener("scroll", handleScrollEvent);
+    return () => {
+      chatDiv.current?.removeEventListener("scroll", handleScrollEvent);
+    };
+  }, []);
 
   const onTextMsgSubmit: SubmitHandler<TextMsgInput> = async (data, e) => {
     const { message } = data;
@@ -93,23 +121,19 @@ export default function Chat({ params }: Props) {
         senderId: currentUser.uid,
         timestamp: serverTimestamp(),
       });
+      reset();
     }
   };
 
   return (
     <section className="flex-[2] flex flex-col">
-      <div className="flex-1 w-full p-10 pb-20 overflow-y-scroll">
+      <div className="flex-1 w-full p-10 pb-20 overflow-y-scroll" ref={chatDiv}>
         {messages.map((msg, i) => (
           <div
             key={msg.id}
             className={`flex mb-4 ${
               msg.sender.id === currentUser?.uid && "flex-row-reverse"
             }`}
-            ref={(node) => {
-              if (i + 1 == messages.length) {
-                lastMsg.current = node;
-              }
-            }}
           >
             <img
               src={msg.sender.profileImage}
@@ -139,11 +163,26 @@ export default function Chat({ params }: Props) {
             )}
           </div>
         ))}
+        <div ref={chatBottom}></div>
         {imageModalOpen && (
           <AddImageForm chatId={params.id} setOpenState={setImageModalOpen} />
         )}
       </div>
       <div className="relative">
+        {showScrollBottom && (
+          <div className="w-full absolute flex justify-center bottom-[75px]">
+            <div
+              className="bg-white shadow-md p-[2px] rounded-full hover:scale-105 cursor-pointer ease transition-all"
+              onClick={() => {
+                chatBottom.current?.scrollIntoView({
+                  behavior: "smooth",
+                });
+              }}
+            >
+              <BiChevronDown className="w-8 h-8" />
+            </div>
+          </div>
+        )}
         <form
           className="flex absolute items-end w-full gap-2 left-0 bottom-0 p-3"
           onSubmit={handleSubmit(onTextMsgSubmit)}
