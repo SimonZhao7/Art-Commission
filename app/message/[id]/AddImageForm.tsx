@@ -1,8 +1,6 @@
 import {
   useState,
   useRef,
-  Dispatch,
-  SetStateAction,
   ChangeEvent,
   SyntheticEvent,
 } from "react";
@@ -20,12 +18,13 @@ import { useAuth } from "@/hooks/useFirebaseUser";
 
 interface Props {
   chatId: string;
-  setOpenState: Dispatch<SetStateAction<boolean | undefined>>;
+  closeModal: () => void;
 }
 
-export default function AddImageForm({ chatId, setOpenState }: Props) {
+export default function AddImageForm({ chatId, closeModal }: Props) {
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const currentUser = useAuth();
 
@@ -58,11 +57,19 @@ export default function AddImageForm({ chatId, setOpenState }: Props) {
         timestamp: serverTimestamp(),
       });
     }
-    setOpenState(false);
+    closeModal();
   };
 
   return (
-    <div className="absolute flex w-full z-20 top-0 left-0 h-full bg-black bg-opacity-60 items-center justify-center">
+    <div
+      className="absolute flex w-full z-20 top-0 left-0 h-full bg-black bg-opacity-60 items-center justify-center"
+      onClick={(e) => {
+        if (e.target === containerRef.current) {
+          closeModal()
+        }
+      }}
+      ref={containerRef}
+    >
       <form
         className="bg-white p-10 rounded-md w-[400px]"
         onSubmit={submitImage}

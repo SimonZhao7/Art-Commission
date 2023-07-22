@@ -7,10 +7,8 @@ import {
   collection,
   where,
   getDoc,
-  addDoc,
   doc,
   orderBy,
-  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 // Components
@@ -20,8 +18,8 @@ import ChatImage from "./ChatImage";
 import { useAuth } from "@/hooks/useFirebaseUser";
 import { SubmitHandler, useForm } from "react-hook-form";
 // Icons
-import { AiOutlineSend, AiOutlinePlusCircle } from "react-icons/ai";
 import { BiChevronDown } from "react-icons/bi";
+import MessageForm from "./MessageForm";
 
 interface Props {
   params: {
@@ -44,15 +42,10 @@ interface User {
   profileImage: string;
 }
 
-type TextMsgInput = {
-  message: string;
-};
-
 export default function Chat({ params }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showScrollBottom, setShowScrollBottom] = useState<boolean>(false);
-  const [imageModalOpen, setImageModalOpen] = useState<boolean>();
-  const { register, handleSubmit, reset } = useForm<TextMsgInput>();
+  const [imageModalOpen, setImageModalOpen] = useState<boolean>(false);
   const currentUser = useAuth();
   const scrollBottom = useRef<boolean>(true);
   const chatDiv = useRef<HTMLDivElement | null>(null);
@@ -111,21 +104,6 @@ export default function Chat({ params }: Props) {
     };
   }, []);
 
-  const onTextMsgSubmit: SubmitHandler<TextMsgInput> = async (data, e) => {
-    const { message } = data;
-    e?.preventDefault();
-    if (message.length > 0 && currentUser !== null) {
-      await addDoc(collection(db, "messages"), {
-        chatId: params.id,
-        message,
-        messageType: "TEXT",
-        senderId: currentUser.uid,
-        timestamp: serverTimestamp(),
-      });
-      reset();
-    }
-  };
-
   return (
     <section className="flex-[2] flex flex-col">
       <div className="flex-1 w-full p-10 pb-20 overflow-y-scroll" ref={chatDiv}>
@@ -166,7 +144,10 @@ export default function Chat({ params }: Props) {
         ))}
         <div ref={chatBottom}></div>
         {imageModalOpen && (
-          <AddImageForm chatId={params.id} setOpenState={setImageModalOpen} />
+          <AddImageForm
+            chatId={params.id}
+            closeModal={() => setImageModalOpen(false)}
+          />
         )}
       </div>
       <div className="relative">
@@ -184,22 +165,10 @@ export default function Chat({ params }: Props) {
             </div>
           </div>
         )}
-        <form
-          className="flex absolute items-end w-full gap-2 left-0 bottom-0 p-3"
-          onSubmit={handleSubmit(onTextMsgSubmit)}
-        >
-          <button className="py-2" onClick={() => setImageModalOpen(true)}>
-            <AiOutlinePlusCircle className="text-black w-5 h-5" />
-          </button>
-          <textarea
-            {...register("message")}
-            rows={1}
-            className="border-2 flex-1 border-light-gray resize-none outline-none text-sm p-3"
-          ></textarea>
-          <button type="submit" className="py-2">
-            <AiOutlineSend className="text-black w-5 h-5" />
-          </button>
-        </form>
+        <MessageForm
+          id={params.id}
+          openImageModal={() => setImageModalOpen(true)}
+        />
       </div>
     </section>
   );
