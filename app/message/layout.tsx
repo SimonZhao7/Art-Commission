@@ -87,9 +87,9 @@ export default function Layout({ children }: { children: ReactElement }) {
           />
         </div>
       )}
-      <aside className="flex-1 border-r-med-gray border-[2px]">
-        <div className="flex h-[30px] items-center p-5">
-          <h3 className="flex-1">Messaging</h3>
+      <aside className="flex-1 border-r-med-gray border-[2px] overflow-hidden">
+        <div className="flex h-[30px] items-center py-8 px-5">
+          <h2 className="flex-1 text-xl">Messaging</h2>
           <FiEdit
             className="w-5 h-5 hover:scale-110 hover:cursor-pointer transition-all"
             onClick={() => setCreateFormOpen(true)}
@@ -98,10 +98,25 @@ export default function Layout({ children }: { children: ReactElement }) {
         {chats.map((chat) => (
           <a
             key={chat.id}
-            className="flex p-5 hover:cursor-pointer"
+            className="flex items-center gap-4 px-5 py-3 hover:cursor-pointer hover:bg-light-gray"
             onClick={() => router.push(`/message/${chat.id}`)}
           >
-            <p>{chat.id}</p>
+            {currentUser && (
+              <img
+                className="w-10 h-10 rounded-full border-light-gray border-2"
+                src={
+                  chat.users.filter((user) => user.id !== currentUser.uid)[0]
+                    ?.profileImage
+                }
+                alt="chat user profile image"
+              />
+            )}
+            <p className="text-ellipsis overflow-hidden">
+              {chat.users
+                .filter((user) => user.id !== currentUser?.uid)
+                .map((user) => user.username)
+                .join(", ")}
+            </p>
           </a>
         ))}
       </aside>
