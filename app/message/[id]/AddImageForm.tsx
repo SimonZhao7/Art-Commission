@@ -1,9 +1,4 @@
-import {
-  useState,
-  useRef,
-  ChangeEvent,
-  SyntheticEvent,
-} from "react";
+import { useState, useRef, ChangeEvent, SyntheticEvent } from "react";
 // Firebase
 import { db, storage } from "@/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
@@ -65,7 +60,7 @@ export default function AddImageForm({ chatId, closeModal }: Props) {
       className="absolute flex w-full z-20 top-0 left-0 h-full bg-black bg-opacity-60 items-center justify-center"
       onClick={(e) => {
         if (e.target === containerRef.current) {
-          closeModal()
+          closeModal();
         }
       }}
       ref={containerRef}

@@ -17,4 +17,8 @@
     .form-btn {
         @apply text-center w-full bg-highlight hover:bg-highlight-hover hover:scale-[1.02] transition-all ease-out text-white py-3 rounded-md;
     }
+
+    .link {
+        @apply block py-2 px-5 hover:bg-slight-gray;
+    }
 }

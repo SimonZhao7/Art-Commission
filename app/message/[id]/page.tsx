@@ -16,7 +16,6 @@ import AddImageForm from "./AddImageForm";
 import ChatImage from "./ChatImage";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
-import { SubmitHandler, useForm } from "react-hook-form";
 // Icons
 import { BiChevronDown } from "react-icons/bi";
 import MessageForm from "./MessageForm";
