@@ -21,4 +21,8 @@
     .link {
         @apply block py-2 px-5 hover:bg-slight-gray;
     }
+
+    .carousel-btn {
+        @apply h-full hover:bg-light-gray transition-all duration-75 rounded-sm;
+    }
 }
