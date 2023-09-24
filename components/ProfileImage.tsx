@@ -68,7 +68,6 @@ export default function ProfileImage() {
 
   const logout = async () => {
     await signOut(auth);
-
   };
 
   return (
@@ -81,7 +80,7 @@ export default function ProfileImage() {
         />
       )}
       <motion.div
-        className="absolute top-14 right-0 shadow-md w-60"
+        className="absolute top-16 right-0 shadow-md w-60 bg-white rounded-md"
         variants={wrapperVariant}
         initial={"hidden"}
         animate={showMenu ? "visible" : "hidden"}
