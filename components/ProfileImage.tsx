@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 // Firebase
 import { collection, getDoc, doc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
@@ -54,6 +54,8 @@ export default function ProfileImage() {
   const [user, setUser] = useState<User | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const currentUser = useAuth();
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
 
   const MotionLink = motion(Link);
 
@@ -66,6 +68,25 @@ export default function ProfileImage() {
     }
   }, [currentUser]);
 
+  const clickEventHandler = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (
+      showMenu &&
+      menuRef.current !== null &&
+      !menuRef.current.contains(e.target as Node) &&
+      e.target !== imageRef.current
+    ) {
+      setShowMenu(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("click", clickEventHandler);
+    return () => {
+      window.removeEventListener("click", clickEventHandler);
+    };
+  });
+
   const logout = async () => {
     await signOut(auth);
   };
@@ -76,10 +97,12 @@ export default function ProfileImage() {
         <img
           className="w-10 h-10 rounded-full border-2 border-light-gray cursor-pointer hover:scale-110 transition-all duration-100 ease-out"
           src={user?.profileImage}
+          ref={imageRef}
           onClick={() => setShowMenu(!showMenu)}
         />
       )}
       <motion.div
+        ref={menuRef}
         className="absolute top-16 right-0 shadow-md w-60 bg-white rounded-md"
         variants={wrapperVariant}
         initial={"hidden"}
