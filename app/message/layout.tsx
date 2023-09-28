@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, ReactElement, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 // Firebase
 import {
@@ -96,10 +97,11 @@ export default function Layout({ children }: { children: ReactElement }) {
           />
         </div>
         {chats.map((chat) => (
-          <a
+          <Link
             key={chat.id}
             className="flex items-center gap-4 px-5 py-3 hover:cursor-pointer hover:bg-light-gray"
-            onClick={() => router.push(`/message/${chat.id}`)}
+            href={`/message/${chat.id}`}
+            prefetch={true}
           >
             {currentUser && (
               <img
@@ -117,7 +119,7 @@ export default function Layout({ children }: { children: ReactElement }) {
                 .map((user) => user.username)
                 .join(", ")}
             </p>
-          </a>
+          </Link>
         ))}
       </aside>
       {children}
