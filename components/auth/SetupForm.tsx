@@ -1,8 +1,10 @@
 "use client";
+
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
 // React Hook Form
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 // Components
 import Input from "@/components/Input";
 // Firebase
@@ -19,6 +21,8 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+// Schemas
+import SetupFormSchema from "@/lib/schemas/SetupFormSchema";
 // Icons
 import { LuImagePlus } from "react-icons/lu";
 import { CgDanger } from "react-icons/cg";
@@ -38,7 +42,11 @@ export default function SetupForm({ uid }: { uid: string }) {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<FormFields>({ mode: "onBlur", reValidateMode: "onBlur" });
+  } = useForm<FormFields>({
+    mode: "onBlur",
+    reValidateMode: "onBlur",
+    resolver: zodResolver(SetupFormSchema),
+  });
   const uploadedImage = watch("profileImage");
 
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -82,20 +90,6 @@ export default function SetupForm({ uid }: { uid: string }) {
     router.push("/");
   });
 
-  const lengthCheck = (
-    value: string,
-    fieldName: string,
-    min: number,
-    max: number
-  ) => {
-    if (value.length < min) {
-      return `${fieldName} is too short`;
-    } else if (value.length > max) {
-      return `${fieldName} is too long`;
-    }
-    return true;
-  };
-
   return (
     <form>
       <section className="md:flex gap-5">
@@ -105,32 +99,6 @@ export default function SetupForm({ uid }: { uid: string }) {
             name="username"
             register={register}
             error={errors.username?.message}
-            regProps={{
-              required: {
-                value: true,
-                message: "You must provide a username",
-              },
-              pattern: {
-                value: /^\S+$/,
-                message: "Username may not contain spaces",
-              },
-              validate: {
-                length: (value) => lengthCheck(value, "Username", 8, 50),
-                exists: (value) => {
-                  return getDocs(
-                    query(
-                      collection(db, "users"),
-                      where("username", "==", value)
-                    )
-                  ).then((res) => {
-                    if (res.empty) {
-                      return true;
-                    }
-                    return "Username already exists";
-                  });
-                },
-              },
-            }}
           />
           <Input
             label="Email"
@@ -140,10 +108,6 @@ export default function SetupForm({ uid }: { uid: string }) {
             error={errors.email?.message}
             regProps={{
               disabled: true,
-              required: {
-                value: true,
-                message: "Missing email information. Please sign in again.",
-              },
             }}
           />
         </div>
@@ -193,17 +157,6 @@ export default function SetupForm({ uid }: { uid: string }) {
             name="firstName"
             register={register}
             error={errors.firstName?.message}
-            regProps={{
-              required: {
-                value: true,
-                message: "You must provide a first name",
-              },
-              pattern: {
-                value: /^\S+$/,
-                message: "First name may not contain spaces",
-              },
-              validate: (value) => lengthCheck(value, "First name", 0, 50),
-            }}
           />
         </div>
         <div className="flex-1">
@@ -212,17 +165,6 @@ export default function SetupForm({ uid }: { uid: string }) {
             name="lastName"
             register={register}
             error={errors.lastName?.message}
-            regProps={{
-              required: {
-                value: true,
-                message: "You must provide a last name",
-              },
-              pattern: {
-                value: /^\S+$/,
-                message: "Last name may not contain spaces",
-              },
-              validate: (value) => lengthCheck(value, "Last name", 0, 50),
-            }}
           />
         </div>
       </section>
