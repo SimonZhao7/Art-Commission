@@ -17,6 +17,7 @@ module.exports = {
         'light-gray': '#F5F5F5',
         'med-gray': '#D6D6D6',
         'jet': '#292929',
+        'jet-hover': '#454545',
         'highlight': '#76ABA8',
         'highlight-hover': '#68A19E',
         'err': '#DA2B2B',

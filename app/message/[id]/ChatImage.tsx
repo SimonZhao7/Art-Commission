@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import clsx from "clsx";
 
 export default function ChatImage({ src }: { src: string }) {
   const [clickedImage, setClickedImage] = useState(false);
@@ -9,9 +10,10 @@ export default function ChatImage({ src }: { src: string }) {
       <img
         ref={image}
         src={src}
-        className={`rounded-lg w-[220px] ${
-          !image.current?.complete && "h-[400px]"
-        } max-h-[400px] object-cover cursor-pointer`}
+        className={clsx(
+          "rounded-lg w-[220px] max-h-[400px] object-cover cursor-pointer",
+          !image.current?.complete && "h-[400px]",
+        )}
         onClick={() => setClickedImage(true)}
       />
       {clickedImage && (
