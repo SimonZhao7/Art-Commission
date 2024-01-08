@@ -10,16 +10,7 @@ import Input from "@/components/Input";
 // Firebase
 import { auth, db, storage } from "@/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import {
-  setDoc,
-  doc,
-  addDoc,
-  Timestamp,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { setDoc, doc, addDoc, Timestamp, collection } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 // Schemas
 import SetupFormSchema from "@/lib/schemas/SetupFormSchema";
@@ -120,7 +111,7 @@ export default function SetupForm({ uid }: { uid: string }) {
               <img
                 src={URL.createObjectURL(uploadedImage)}
                 alt="image preview"
-                className="aspect-square object-cover"
+                className="aspect-square object-cover w-[125px]"
               />
             ) : (
               <LuImagePlus size={50} />

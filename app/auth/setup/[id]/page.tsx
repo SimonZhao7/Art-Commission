@@ -1,15 +1,16 @@
 import { redirect } from "next/navigation";
+// Firebase
 import { getDoc, doc, collection } from "firebase/firestore";
 import { db } from "@/firebase";
 // Components
 import SetupForm from "@/components/auth/SetupForm";
+
 
 interface Props {
     params: {
         id: string
     }
 }
-
 
 export default async function FinishSetup({ params }: Props) {
     const user = await getDoc(doc(collection(db, 'users'), params.id));

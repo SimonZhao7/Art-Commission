@@ -1,6 +1,8 @@
 import { z } from "zod";
+// Firebase
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/firebase";
+
 
 const SetupFormSchema = z.object({
   username: z
@@ -29,7 +31,7 @@ const SetupFormSchema = z.object({
     .min(1, "No last name provided")
     .max(50, "Last name exceeds max length of 50")
     .regex(/^[A-Za-z]+$/, "Last name contains invalid characters"),
-  profileImage: z.instanceof(File),
+  profileImage: z.instanceof(File, { message: "No profile image provided" }),
 });
 
 export default SetupFormSchema;

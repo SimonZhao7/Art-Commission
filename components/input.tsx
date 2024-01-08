@@ -3,6 +3,8 @@ import { InputHTMLAttributes } from "react";
 import { RegisterOptions, UseFormRegister } from "react-hook-form";
 // React Icons
 import { CgDanger } from "react-icons/cg";
+// Util
+import clsx from "clsx";
 
 interface InputProps {
   label: string;
@@ -26,14 +28,13 @@ export default function Input({
   register,
 }: InputProps) {
   return (
-    <div className="mb-3">
+    <div className="mb-3 justify-self-center">
       <label className="block mb-1 text-sm">{label}</label>
       <input
-        className={`w-full h-10 text-sm ${
-          error ? "border-red-500" : "border-gray-300"
-        } border-2 rounded-md outline-none p-3 ${
-          !error && "hover:border-gray-400"
-        } transition-all duration-100`}
+        className={clsx(
+          "border-2 rounded-md outline-none p-3 w-full h-10 text-sm transition-all duration-100",
+          error ? "border-red-500" : "border-gray-300 hover:border-gray-400",
+        )}
         type={type}
         placeholder={placeholder}
         {...props}
