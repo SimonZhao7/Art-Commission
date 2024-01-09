@@ -1,34 +1,63 @@
-import { useState, useRef, ChangeEvent } from "react";
+import {
+  useState,
+  useEffect,
+  useRef,
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+} from "react";
 // React Icons
 import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
 import { AiOutlinePlus } from "react-icons/ai";
 import { LuImagePlus } from "react-icons/lu";
 import { FiEdit } from "react-icons/fi";
-import { GrDrag } from "react-icons/gr";
-import { BsTrash3Fill } from "react-icons/bs";
+// Components
+import EditCarousel from "./EditCarousel";
+// Types
+import { Image } from "@/types/imageCarousel";
 
 interface Props {
   images: Image[];
   height: number;
   handleFileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
-}
-
-export interface Image {
-  url: string;
-  image: File;
+  setImages: Dispatch<SetStateAction<Image[]>>;
 }
 
 export default function ImageCarousel({
   images,
   height,
   handleFileUpload,
+  setImages,
 }: Props) {
   const [index, setIndex] = useState(0);
   const [editOpen, setEditOpen] = useState(false);
+  const [dragImages, setDragImages] = useState<Image[]>(images);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
+  const items = document.getElementsByClassName("edit-item");
+
+  useEffect(() => {
+    const handleDragStart = (e: Event) => {};
+
+    const handleDragEnd = (e: Event) => {};
+
+    for (let i = 0; i < items.length; i++) {
+      items[i].addEventListener("dragstart", handleDragStart);
+      items[i].addEventListener("dragend", handleDragEnd);
+    }
+  }, []);
+
+  const closeModal = () => setEditOpen(false);
+
+  const removeImage = (idx: number) => {
+    setImages(images.filter((_, i) => i !== idx));
+    if (idx <= index) {
+      setIndex(Math.max(0, index - 1));
+    }
+  };
+
   return (
-    <section>
+    <section className="my-20">
       <div className={`flex w-full gap-2`} style={{ height: `${height}px` }}>
         <button
           type="button"
@@ -105,33 +134,11 @@ export default function ImageCarousel({
         onChange={handleFileUpload}
       />
       {editOpen && (
-        <div
-          className="flex items-center justify-center w-screen h-screen absolute p-10 top-0 left-0 z-60 bg-black bg-opacity-60"
-          onClick={() => setEditOpen(false)}
-        >
-          <div
-            className="p-10 rounded-sm bg-white w-full max-w-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h1 className='text-center mb-10 text-2xl'>Edit Image List</h1>
-            {images.map((image, i) => (
-              <div
-                className={`flex items-center gap-4 h-[100px] w-full ${
-                  i < images.length - 1 && "mb-4"
-                }`}
-              >
-                <GrDrag className="w-5 h-5" />
-                <img
-                  className="flex-1 block h-full object-cover rounded-md border-[1px] border-med-gray"
-                  key={image.url}
-                  src={image.url}
-                  alt={`Edit Image ${image.url}`}
-                />
-                <BsTrash3Fill className="w-5 h-5" />
-              </div>
-            ))}
-          </div>
-        </div>
+        <EditCarousel
+          images={images}
+          closeModal={closeModal}
+          removeImage={removeImage}
+        />
       )}
     </section>
   );

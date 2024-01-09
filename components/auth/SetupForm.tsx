@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 // Components
-import Input from "@/components/Input";
+import Input from "@/components/form/Input";
 // Firebase
 import { auth, db, storage } from "@/firebase";
 import { onAuthStateChanged } from "firebase/auth";
