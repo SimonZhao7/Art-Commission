@@ -1,7 +1,7 @@
 import { DragEventHandler } from "react";
 import { GrDrag } from "react-icons/gr";
 import { BsTrash3Fill } from "react-icons/bs";
-import { Image } from "@/types/imageCarousel";
+import { Image } from "@/types/commission";
 
 interface Props {
   images: Image[];

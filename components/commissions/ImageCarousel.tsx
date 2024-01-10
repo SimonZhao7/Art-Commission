@@ -14,7 +14,7 @@ import { FiEdit } from "react-icons/fi";
 // Components
 import EditCarousel from "./EditCarousel";
 // Types
-import { Image } from "@/types/imageCarousel";
+import { Image } from "@/types/commission";
 
 interface Props {
   images: Image[];

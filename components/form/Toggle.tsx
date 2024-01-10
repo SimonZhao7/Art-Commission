@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
 import clsx from "clsx";
+import { UseFormRegister } from "react-hook-form";
 
 interface Props {
-  initState?: boolean;
+  active: boolean;
+  register: UseFormRegister<any>;
 }
 
-const Toggle = ({ initState = false }: Props) => {
-  const [active, setActive] = useState(initState);
+const Toggle = ({ active, register }: Props) => {
+  const { onChange, onBlur, name, ref } = register("visible");
+  const checkbox = useRef<HTMLInputElement | null>(null);
 
   return (
     <div
@@ -17,7 +20,10 @@ const Toggle = ({ initState = false }: Props) => {
         active && "bg-green-500"
       )}
       onClick={() => {
-        setActive(!active);
+        if (checkbox.current) {
+          checkbox.current.click();
+          console.log(checkbox.current.checked);
+        }
       }}
     >
       <div
@@ -26,6 +32,18 @@ const Toggle = ({ initState = false }: Props) => {
           active && "translate-x-[68px]"
         )}
       ></div>
+      <input
+        className="hidden"
+        type="checkbox"
+        checked={active}
+        onChange={onChange}
+        onBlur={onBlur}
+        name={name}
+        ref={(e) => {
+          ref(e);
+          checkbox.current = e;
+        }}
+      />
     </div>
   );
 };
