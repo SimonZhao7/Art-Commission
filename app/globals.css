@@ -11,6 +11,12 @@
         height: 100%;
         margin: 0;
     }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 }
 
 @layer components {
@@ -24,5 +30,9 @@
 
     .carousel-btn {
         @apply h-full hover:bg-light-gray transition-all duration-75 rounded-sm;
+    }
+
+    .underline-input {
+        @apply border-b-med-gray border-b-2 flex items-center hover:border-gray-400 transition-all ease-out;
     }
 }

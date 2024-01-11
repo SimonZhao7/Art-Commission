@@ -16,6 +16,7 @@ const CreateCommissionForm = () => {
   const {
     register,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "onBlur",

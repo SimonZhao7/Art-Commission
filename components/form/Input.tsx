@@ -13,6 +13,8 @@ interface InputProps {
   placeholder?: string;
   props?: InputHTMLAttributes<HTMLInputElement>;
   error?: string;
+  containerClsExt?: string;
+  classExtend?: string;
   register: UseFormRegister<any>;
   regProps?: RegisterOptions;
 }
@@ -25,15 +27,18 @@ export default function Input({
   error,
   props,
   regProps,
+  containerClsExt,
+  classExtend,
   register,
 }: InputProps) {
   return (
-    <div className="mb-3 justify-self-center">
+    <div className={clsx("mb-3 justify-self-center", containerClsExt)}>
       <label className="block mb-1 text-sm">{label}</label>
       <input
         className={clsx(
           "border-2 rounded-md outline-none p-3 w-full h-10 text-sm transition-all duration-100",
           error ? "border-red-500" : "border-gray-300 hover:border-gray-400",
+          classExtend
         )}
         type={type}
         placeholder={placeholder}
