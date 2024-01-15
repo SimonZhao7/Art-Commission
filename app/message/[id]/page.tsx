@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useFirebaseUser";
 // Icons
 import { BiChevronDown } from "react-icons/bi";
 import MessageForm from "./MessageForm";
+import { useModal } from "@/hooks/useModal";
 
 interface Props {
   params: {
@@ -44,7 +45,11 @@ interface User {
 export default function Chat({ params }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [showScrollBottom, setShowScrollBottom] = useState<boolean>(false);
-  const [imageModalOpen, setImageModalOpen] = useState<boolean>(false);
+  const {
+    modalOpen: imageModalOpen,
+    openModal: openImageModal,
+    closeModal: closeImageModal,
+  } = useModal(false);
   const currentUser = useAuth();
   const scrollBottom = useRef<boolean>(true);
   const chatDiv = useRef<HTMLDivElement | null>(null);
@@ -145,7 +150,7 @@ export default function Chat({ params }: Props) {
         {imageModalOpen && (
           <AddImageForm
             chatId={params.id}
-            closeModal={() => setImageModalOpen(false)}
+            closeModal={closeImageModal}
           />
         )}
       </div>
@@ -166,7 +171,7 @@ export default function Chat({ params }: Props) {
         )}
         <MessageForm
           id={params.id}
-          openImageModal={() => setImageModalOpen(true)}
+          openImageModal={openImageModal}
         />
       </div>
     </section>
