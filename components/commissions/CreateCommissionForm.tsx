@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from "react";
 // React Hook Form
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 // Schemas
 import CreateCommissionSchema from "@/lib/schemas/CreateCommissionSchema";
@@ -13,25 +13,25 @@ import CreatePackageModal from "./CreatePackageModal";
 import { useModal } from "@/hooks/useModal";
 // React Icons
 import { FiEdit } from "react-icons/fi";
-import { Image } from "@/types/commission";
+import { Image, CreateCommissionFormFields } from "@/types/commission";
 // Framer Motion
 import { AnimatePresence } from "framer-motion";
 
 const CreateCommissionForm = () => {
-  const {
-    register,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm({
+  const formMethods = useForm<CreateCommissionFormFields>({
     mode: "onBlur",
     resolver: zodResolver(CreateCommissionSchema),
     defaultValues: {
       title: "A New Commission",
       description: "# This is your description section",
       visible: true,
+      packages: [],
     },
   });
+  const {
+    register,
+    watch,
+  } = formMethods;
 
   const { title, description, visible } = watch();
   const [showTitleInput, setShowTitleInput] = useState(false);
@@ -52,7 +52,7 @@ const CreateCommissionForm = () => {
   };
 
   return (
-    <>
+    <FormProvider {...formMethods}>
       <form className="mx-auto max-w-xl 2xl:max-w-7xl pb-20">
         <div className="p-5 flex items-center justify-between shadow-md border-[1px] border-slight-gray">
           {showTitleInput ? (
@@ -98,7 +98,7 @@ const CreateCommissionForm = () => {
           <CreatePackageModal closeModal={closeCreatePackageModal} />
         )}
       </AnimatePresence>
-    </>
+    </FormProvider>
   );
 };
 

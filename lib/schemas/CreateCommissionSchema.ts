@@ -5,10 +5,10 @@ export const CreatePackageSchema = z.object({
     .string()
     .min(1, "No title provided")
     .max(200, "Title may not exceed 200 characters"),
-  revisions: z.number().gte(0, "Can not have negative number of revisions"),
+  revisions: z.coerce.number().gte(0, "Can not have negative number of revisions"),
   details: z.string(),
-  price: z.number().gt(0, "Commission package can not be free"), // Infinity - price varies
-  deliveryTime: z.number().gt(0, "Commission package can not take 0 days"),
+  price: z.coerce.number().gt(0, "Commission package can not be free"), // Infinity - price varies
+  deliveryTime: z.coerce.number().gt(0, "Commission package can not take 0 days"),
 });
 
 const CreateCommissionSchema = z.object({

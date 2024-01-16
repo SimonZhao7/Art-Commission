@@ -1,6 +1,6 @@
 import { z } from 'zod';
 // Schemas
-import { CreatePackageSchema } from "@/lib/schemas/CreateCommissionSchema";
+import CreateCommissionSchema, { CreatePackageSchema } from "@/lib/schemas/CreateCommissionSchema";
 
 export interface Image {
   url: string;
@@ -8,3 +8,5 @@ export interface Image {
 }
 
 export type Package = z.infer<typeof CreatePackageSchema>;
+
+export type CreateCommissionFormFields = z.infer<typeof CreateCommissionSchema>;

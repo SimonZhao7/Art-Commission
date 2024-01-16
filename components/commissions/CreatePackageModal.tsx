@@ -1,15 +1,17 @@
 // Icons
 import { IoClose } from "react-icons/io5";
 // Types
-import { Package } from "@/types/commission";
+import { CreateCommissionFormFields, Package } from "@/types/commission";
 // Schemas
 import { CreatePackageSchema } from "@/lib/schemas/CreateCommissionSchema";
 // React Hook Form
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, useFormContext } from "react-hook-form";
 import { motion } from "framer-motion";
 // Fonts
 import { Montserrat } from "next/font/google";
+// Util
+import clsx from "clsx";
 
 interface Props {
   closeModal: () => void;
@@ -22,15 +24,30 @@ const modalVariant = {
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
+const errorMsg = "text-sm text-red-500 mt-2";
+const inputError = "border-red-500 hover:border-red-500";
+
 const CreatePackageModal = ({ closeModal }: Props) => {
-  const { register, handleSubmit } = useForm<Package>({
+  // Main form state methods
+  const { setValue, getValues } = useFormContext<CreateCommissionFormFields>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Package>({
     resolver: zodResolver(CreatePackageSchema),
+    mode: "onBlur",
   });
 
-  const addPackage: SubmitHandler<Package> = (data, e) => {};
+  const createPackage: SubmitHandler<Package> = (data, e) => {
+    e?.preventDefault();
+    const packages = getValues("packages");
+    setValue("packages", [...packages, data]);
+    closeModal();
+  };
 
   return (
-    <motion.form
+    <motion.div
       initial="closed"
       animate="open"
       exit="closed"
@@ -41,43 +58,69 @@ const CreatePackageModal = ({ closeModal }: Props) => {
       <h1 className={`text-3xl p-5 pl-10 ${montserrat.className}`}>
         Add a package
       </h1>
-      <button
-        type="button"
-        className="absolute right-0 top-0 p-5"
-        onClick={closeModal}
-      >
+      <button className="absolute right-0 top-0 p-5" onClick={closeModal}>
         <IoClose size={50} />
       </button>
-      <section className="flex-1 flex flex-col items-center justify-center w-full">
+      <form
+        onSubmit={handleSubmit(createPackage)}
+        className="flex-1 flex flex-col items-center justify-center w-full"
+      >
         <div className="w-[700px]">
-          <label className="text-sm">Title</label>
-          <input
-            className="underline-input outline-none w-full p-2 mb-4"
-            {...register("title")}
-          />
-          <label className="text-sm">Delivery Time</label>
-          <div className="underline-input mb-4">
+          <div className="mb-4">
+            <label className="text-sm">Title</label>
             <input
-              {...register("price")}
-              className="flex-1 p-3 pl-1 h-10 outline-none"
-              type="number"
+              className={clsx(
+                "underline-input outline-none w-full p-2",
+                errors.title && inputError
+              )}
+              {...register("title")}
             />
-            <span>days</span>
+            {errors.title && <p className={errorMsg}>{errors.title.message}</p>}
           </div>
+          <div className="mb-4">
+            <label className="text-sm">Delivery Time</label>
+            <div
+              className={clsx(
+                "underline-input",
+                errors.deliveryTime && inputError
+              )}
+            >
+              <input
+                {...register("deliveryTime")}
+                className="flex-1 p-3 pl-1 h-10 outline-none"
+                type="number"
+              />
+              <span>days</span>
+            </div>
+            {errors.deliveryTime && (
+              <p className={errorMsg}>{errors.deliveryTime.message}</p>
+            )}
+          </div>
+
           <div className="flex gap-4 mb-4">
             <div className="flex-1">
               <label className="text-sm">Number of revisions</label>
-              <div className="underline-input">
+              <div
+                className={clsx(
+                  "underline-input",
+                  errors.revisions && inputError
+                )}
+              >
                 <input
                   className="p-3 flex-1 pl-1 h-10 outline-none"
                   {...register("revisions")}
                   type="number"
                 />
               </div>
+              {errors.revisions && (
+                <p className={errorMsg}>{errors.revisions.message}</p>
+              )}
             </div>
             <div className="flex-1">
               <label className="text-sm">Price</label>
-              <div className="underline-input">
+              <div
+                className={clsx("underline-input", errors.price && inputError)}
+              >
                 <span>$</span>
                 <input
                   {...register("price")}
@@ -85,16 +128,25 @@ const CreatePackageModal = ({ closeModal }: Props) => {
                   type="number"
                 />
               </div>
+              {errors.price && (
+                <p className={errorMsg}>{errors.price.message}</p>
+              )}
             </div>
           </div>
           <label className="text-sm mb-2 block">Description</label>
-          <textarea className="w-full resize-none h-[300px] outline-none border-med-gray border-2 rounded-md p-5 mb-4"></textarea>
-          <button className="bg-jet hover:bg-jet-hover text-white w-full h-10 rounded-md py-2">
+          <textarea
+            {...register("details")}
+            className="w-full resize-none h-[300px] outline-none border-med-gray border-2 rounded-md p-5 mb-4"
+          ></textarea>
+          <button
+            type="submit"
+            className="bg-jet hover:bg-jet-hover text-white w-full h-10 rounded-md py-2"
+          >
             Add package
           </button>
         </div>
-      </section>
-    </motion.form>
+      </form>
+    </motion.div>
   );
 };
 
