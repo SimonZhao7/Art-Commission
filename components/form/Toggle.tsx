@@ -16,8 +16,8 @@ const Toggle = ({ active, register }: Props) => {
   return (
     <div
       className={clsx(
-        "w-24 bg-med-gray p-[6px] rounded-full inline-flex flex-col justify-center transition-colors linear duration-500 cursor-pointer",
-        active && "bg-green-500"
+        "w-24 p-[6px] rounded-full inline-flex flex-col justify-center transition-colors linear duration-300 cursor-pointer",
+        active ? "bg-green-500" : "bg-med-gray"
       )}
       onClick={() => {
         if (checkbox.current) {
