@@ -9,10 +9,10 @@ import ImageCarousel from "@/components/commissions/ImageCarousel";
 import Toggle from "@/components/form/Toggle";
 import PackageRow from "@/components/commissions/PackageRow";
 import CreatePackageModal from "./CreatePackageModal";
+import HeaderTitleInput from "./HeaderTitleInput";
 // Hooks
 import { useModal } from "@/hooks/useModal";
 // React Icons
-import { FiEdit } from "react-icons/fi";
 import { Image, CreateCommissionFormFields } from "@/types/commission";
 // Framer Motion
 import { AnimatePresence } from "framer-motion";
@@ -28,13 +28,8 @@ const CreateCommissionForm = () => {
       packages: [],
     },
   });
-  const {
-    register,
-    watch,
-  } = formMethods;
-
-  const { title, description, visible } = watch();
-  const [showTitleInput, setShowTitleInput] = useState(false);
+  const { register, watch } = formMethods;
+  const { description, visible } = watch();
   const {
     modalOpen: createPackageModalOpen,
     openModal: openCreatePackageModal,
@@ -54,17 +49,7 @@ const CreateCommissionForm = () => {
   return (
     <FormProvider {...formMethods}>
       <form className="mx-auto max-w-xl 2xl:max-w-7xl pb-20">
-        <div className="p-5 flex items-center justify-between shadow-md border-[1px] border-slight-gray">
-          {showTitleInput ? (
-            <input {...register("title")} className="outline-none" />
-          ) : (
-            <p>{title}</p>
-          )}
-          <FiEdit
-            className="w-5 h-5 cursor-pointer"
-            onClick={() => setShowTitleInput(!showTitleInput)}
-          />
-        </div>
+        <HeaderTitleInput />
         <div className="p-4 w-full flex items-center justify-between shadow-sm">
           <label className="text-md">Make Public</label>
           <Toggle active={visible} register={register} />

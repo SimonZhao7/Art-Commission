@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 // Components
-import Input from "@/components/Input";
+import Input from "@/components/form/Input";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
 

@@ -93,13 +93,17 @@ export default function ProfileImage() {
 
   return (
     <>
-      {currentUser !== null && (
+      {currentUser !== null ? (
         <img
           className="w-10 h-10 rounded-full border-2 border-light-gray cursor-pointer hover:scale-110 transition-all duration-100 ease-out"
           src={user?.profileImage}
           ref={imageRef}
           onClick={() => setShowMenu(!showMenu)}
         />
+      ) : (
+        <div className="w-20 h-8 bg-jet text-white rounded-md flex justify-center items-center hover:bg-jet-hover">
+          <Link href="/auth/register">Login</Link>
+        </div>
       )}
       <motion.div
         ref={menuRef}

@@ -8,6 +8,7 @@ export const useAuth = () => {
   const [currentUser, setUser] = useState<User | null>(null);
 
   useEffect(() => {
+    // Attatch listener to user logged-in state
     const unsub = onAuthStateChanged(auth, (user) => {
       setUser(user);
     });
