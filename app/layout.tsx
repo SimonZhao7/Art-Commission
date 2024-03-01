@@ -1,14 +1,18 @@
 import Link from "next/link";
-import { Inter } from "next/font/google";
+import { Montserrat, Space_Grotesk } from "next/font/google";
 // Components
 import SearchBar from "./SearchBar";
+import ProfileImage from "@/components/ProfileImage";
 // React Icons
 import { LuInbox } from "react-icons/lu";
 import { RiChat3Line } from "react-icons/ri";
 import "./globals.css";
-import ProfileImage from "@/components/ProfileImage";
 
-const inter = Inter({ subsets: ["latin"] });
+const montserrat = Montserrat({ subsets: ["latin"], variable: "--montserrat" });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--space-grotesk",
+});
 
 export const metadata = {
   title: "Create Next App",
@@ -21,10 +25,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <nav className="bg-white h-14 flex items-center justify-between px-5 fixed top-0 w-full shadow-sm">
-          <Link href={"/"}>Home</Link>
+    <html
+      lang="en"
+      className={`${montserrat.variable} ${spaceGrotesk.variable}`}
+    >
+      <body>
+        <nav className="bg-dark-bg h-20 flex items-center justify-between px-14 fixed top-0 w-full shadow-sm">
+          <Link href={"/"} className="text-white text-xl font-medium font-montserrat">ArtCommission</Link>
           <SearchBar />
           <div className="flex items-center gap-4">
             <LuInbox size={25} className="hover:cursor-pointer" />
@@ -34,9 +41,7 @@ export default function RootLayout({
             <ProfileImage />
           </div>
         </nav>
-        <div className="pt-14 h-full overflow-y-scroll">
-          {children}
-        </div>
+        <div className="pt-14 h-full overflow-y-scroll">{children}</div>
       </body>
     </html>
   );

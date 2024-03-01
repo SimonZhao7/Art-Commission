@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        'md': '16px',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
@@ -21,6 +24,19 @@ module.exports = {
         'highlight': '#76ABA8',
         'highlight-hover': '#68A19E',
         'err': '#DA2B2B',
+        // Migrate New Colors
+        'dark-bg': '#070F2B',
+        'dark-blue': '#202949',
+        'dark-blue-highlight': '#596284',
+        'dark-purple': '#1B1A55',
+        'dark-purple-highlight': '#9290C3',
+        'dark-purple-hover': '#7877A0',
+        'dark-yellow': '#FAF7AB',
+        'dark-gray': '#D7D7D7'
+      },
+      fontFamily: {
+        'montserrat': 'var(--montserrat)',
+        'space-grotesk': 'var(--space-grotesk)',
       }
     },
   },

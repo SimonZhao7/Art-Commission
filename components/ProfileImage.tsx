@@ -101,8 +101,8 @@ export default function ProfileImage() {
           onClick={() => setShowMenu(!showMenu)}
         />
       ) : (
-        <div className="w-20 h-8 bg-jet text-white rounded-md flex justify-center items-center hover:bg-jet-hover">
-          <Link href="/auth/register">Login</Link>
+        <div className="w-[135px] h-10 bg-dark-purple-highlight btn-glow hover:bg-dark-purple-hover text-black rounded-md font-md font-montserrat flex justify-center items-center">
+          <Link href="/auth/signin">Sign in</Link>
         </div>
       )}
       <motion.div
