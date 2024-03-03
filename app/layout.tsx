@@ -41,7 +41,7 @@ export default function RootLayout({
             <ProfileImage />
           </div>
         </nav>
-        <div className="pt-14 h-full overflow-y-scroll">{children}</div>
+        <div className="pt-20 h-full overflow-y-scroll bg-dark-bg">{children}</div>
       </body>
     </html>
   );

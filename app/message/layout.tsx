@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, ReactElement, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 // Firebase
 import {
@@ -13,27 +12,19 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
-// React Icons
-import { FiEdit } from "react-icons/fi";
+// Types
+import { User } from '@/types/user';
+import { Chat } from "@/types/chat";
 // Components
 import AddMsgForm from "./AddMsgForm";
+import ChatTabs from "./ChatTabs";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
+import { useModal } from "@/hooks/useModal";
 
-interface User {
-  id: string;
-  username: string;
-  profileImage: string;
-}
-
-interface Chat {
-  id: string;
-  messages: string[];
-  users: User[];
-}
 
 export default function Layout({ children }: { children: ReactElement }) {
-  const [createFormOpen, setCreateFormOpen] = useState<boolean>(false);
+  const { modalOpen, openModal, closeModal } = useModal(false);
   const [chats, setChats] = useState<Chat[]>([]);
   const currentUser = useAuth();
   const router = useRouter();
@@ -43,7 +34,7 @@ export default function Layout({ children }: { children: ReactElement }) {
     const handleClick = (e: Event) => {
       if (!bgRef || !bgRef.current) return;
       if (bgRef.current == e.target) {
-        setCreateFormOpen(false);
+        closeModal();
       }
     };
     window.addEventListener("click", handleClick);
@@ -76,52 +67,19 @@ export default function Layout({ children }: { children: ReactElement }) {
 
   return (
     <main className="flex h-full">
-      {createFormOpen && (
+      {modalOpen && (
         <div
           className="flex items-center justify-center w-full h-full absolute bg-black bg-opacity-60 z-10 top-0"
           ref={bgRef}
         >
           <AddMsgForm
             closeForm={() => {
-              setCreateFormOpen(false);
+              closeModal
             }}
           />
         </div>
       )}
-      <aside className="flex-1 border-r-med-gray border-[2px] overflow-hidden">
-        <div className="flex h-[30px] items-center py-8 px-5">
-          <h2 className="flex-1 text-xl">Messaging</h2>
-          <FiEdit
-            className="w-5 h-5 hover:scale-110 hover:cursor-pointer transition-all"
-            onClick={() => setCreateFormOpen(true)}
-          />
-        </div>
-        {chats.map((chat) => (
-          <Link
-            key={chat.id}
-            className="flex items-center gap-4 px-5 py-3 hover:cursor-pointer hover:bg-light-gray"
-            href={`/message/${chat.id}`}
-            prefetch={true}
-          >
-            {currentUser && (
-              <img
-                className="w-10 h-10 rounded-full border-light-gray border-2"
-                src={
-                  chat.users.filter((user) => user.id !== currentUser.uid)[0]
-                    ?.profileImage
-                }
-                alt="chat user profile image"
-              />
-            )}
-            <p className="text-ellipsis overflow-hidden">
-              {chat.users
-                .filter((user) => user.id !== currentUser?.uid)
-                .map((user) => user.username)
-                .join(", ")}
-            </p>
-          </Link>
-        ))}
-      </aside>
+      <ChatTabs chats={chats} openModal={openModal} />
       {children}
     </main>
   );

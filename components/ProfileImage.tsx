@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/useFirebaseUser";
 // Framer Motion
 import { motion } from "framer-motion";
 // Types
-import User from "@/types/user";
+import { User } from "@/types/user";
 import Link from "next/link";
 
 const wrapperVariant = {
