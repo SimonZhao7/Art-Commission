@@ -1,28 +1,24 @@
 // React Form
-import { useForm, SubmitHandler } from "react-hook-form";
+import { FormEventHandler, useState } from "react";
 // Firebase
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
 // Icons
-import { AiOutlineSend, AiOutlinePlusCircle } from "react-icons/ai";
+import { IoSend } from "react-icons/io5";
+import { FaCirclePlus } from "react-icons/fa6";
 
 interface Props {
   id: string;
   openImageModal: () => void;
 }
 
-type TextMsgInput = {
-  message: string;
-};
-
 export default function MessageForm({ id, openImageModal }: Props) {
-  const { register, handleSubmit, reset } = useForm<TextMsgInput>();
+  const [message, setMessage] = useState("");
   const currentUser = useAuth();
 
-  const onTextMsgSubmit: SubmitHandler<TextMsgInput> = async (data, e) => {
-    const { message } = data;
+  const sendMessage: FormEventHandler<HTMLFormElement> = async (e) => {
     e?.preventDefault();
     if (message.length > 0 && currentUser !== null) {
       await addDoc(collection(db, "messages"), {
@@ -32,25 +28,30 @@ export default function MessageForm({ id, openImageModal }: Props) {
         senderId: currentUser.uid,
         timestamp: serverTimestamp(),
       });
-      reset();
+      setMessage("");
     }
   };
 
   return (
     <form
-      className="flex absolute items-end w-full gap-2 left-0 bottom-0 p-3"
-      onSubmit={handleSubmit(onTextMsgSubmit)}
+      className="w-full py-2 px-4 flex items-center bg-dark-blue rounded-[10px] gap-3"
+      onSubmit={sendMessage}
     >
-      <button className="py-2" onClick={openImageModal}>
-        <AiOutlinePlusCircle className="text-black w-5 h-5" />
+      <button className="py-2 relative" onClick={openImageModal}>
+        <FaCirclePlus className="text-dark-gray w-5 h-5" />
       </button>
-      <textarea
-        {...register("message")}
-        rows={1}
-        className="border-2 flex-1 border-light-gray resize-none outline-none text-sm p-3"
-      ></textarea>
-      <button type="submit" className="py-2">
-        <AiOutlineSend className="text-black w-5 h-5" />
+      <span
+        onInput={(e) => {
+          const node = e.target as Element;
+          console.log(node.innerHTML);
+          setMessage(node.innerHTML!);
+        }}
+        placeholder="Message..."
+        className="block w-full text-dark-gray bg-transparent font-montserrat outline-none overflow-scroll text-sm max-h-[76px] px-1"
+        contentEditable={true}
+      ></span>
+      <button type="submit" className="py-2 relative">
+        <IoSend className="text-dark-gray w-5 h-5" />
       </button>
     </form>
   );

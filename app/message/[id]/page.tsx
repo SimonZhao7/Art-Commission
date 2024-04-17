@@ -111,68 +111,69 @@ export default function Chat({ params }: Props) {
   return (
     <section className="flex-[2] flex flex-col">
       <div className="flex-1 w-full p-10 pb-20 overflow-y-scroll" ref={chatDiv}>
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex mb-4 ${
-              msg.sender.id === currentUser?.uid && "flex-row-reverse"
-            }`}
-          >
-            <img
-              src={msg.sender.profileImage}
-              alt={msg.sender.username}
-              className={`h-10 w-10 border-2 border-light-gray ${
-                msg.sender.id === currentUser?.uid ? "ml-3" : "mr-3"
-              } rounded-full`}
-            />
-            {msg.messageType == "TEXT" ? (
-              <div
-                key={msg.id}
-                className={`bg-light-gray rounded-[20px] py-3 px-4 inline-flex flex-wrap max-w-[50%] ${
-                  msg.sender.id === currentUser?.uid && "float-right"
-                }`}
-              >
-                <p
-                  className="text-sm inline"
-                  style={{ wordBreak: "break-word" }}
+        {messages.map((msg) => {
+          const fromSelf = msg.sender.id === currentUser?.uid;
+          return (
+            <div
+              key={msg.id}
+              className={`flex mb-4 font-montserrat ${
+                msg.sender.id === currentUser?.uid && "flex-row-reverse"
+              }`}
+            >
+              <img
+                src={msg.sender.profileImage}
+                alt={msg.sender.username}
+                className={`h-[50px] w-[50px] border-2 border-light-gray ${
+                  msg.sender.id === currentUser?.uid ? "ml-5" : "mr-5"
+                } rounded-full`}
+              />
+              {msg.messageType == "TEXT" ? (
+                <div
+                  key={msg.id}
+                  className={`bg-dark-blue rounded-[10px] py-3 px-5 inline-flex flex-wrap max-w-[50%] ${
+                    fromSelf && "bg-dark-purple-highlight float-right"
+                  }`}
                 >
-                  {msg.message}
-                </p>
-              </div>
-            ) : (
-              <div className="rounded-lg border-2 border-med-gray">
-                <ChatImage src={msg.message} />
-              </div>
-            )}
-          </div>
-        ))}
+                  <p
+                    className={`text-sm flex items-center  ${
+                      fromSelf ? "text-black" : "text-dark-gray"
+                    }`}
+                    style={{ wordBreak: "break-word" }}
+                  >
+                    {msg.message}
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-lg">
+                  <ChatImage src={msg.message} />
+                </div>
+              )}
+            </div>
+          );
+        })}
         <div ref={chatBottom}></div>
         {imageModalOpen && (
-          <AddImageForm
-            chatId={params.id}
-            closeModal={closeImageModal}
-          />
+          <AddImageForm chatId={params.id} closeModal={closeImageModal} />
         )}
       </div>
       <div className="relative">
-        {showScrollBottom && (
-          <div className="w-full absolute flex justify-center bottom-[75px]">
-            <div
-              className="bg-white shadow-md p-[2px] rounded-full hover:scale-105 cursor-pointer ease transition-all"
-              onClick={() => {
-                chatBottom.current?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
-            >
-              <BiChevronDown className="w-8 h-8" />
+        <div className="absolute w-full bottom-5 px-10">
+          {showScrollBottom && (
+            <div className="w-full flex justify-center mb-3">
+              <div
+                className="bg-white shadow-md p-[2px] rounded-full hover:scale-110 cursor-pointer ease transition-all"
+                onClick={() => {
+                  chatBottom.current?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }}
+              >
+                <BiChevronDown className="w-8 h-8" />
+              </div>
             </div>
-          </div>
-        )}
-        <MessageForm
-          id={params.id}
-          openImageModal={openImageModal}
-        />
+          )}
+          <MessageForm id={params.id} openImageModal={openImageModal} />
+        </div>
       </div>
     </section>
   );
