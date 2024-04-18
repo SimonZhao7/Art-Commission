@@ -28,6 +28,8 @@ export default function MessageForm({ id, openImageModal }: Props) {
         senderId: currentUser.uid,
         timestamp: serverTimestamp(),
       });
+      const el = document.getElementById("textarea");
+      el!.innerHTML = "";
       setMessage("");
     }
   };
@@ -41,6 +43,7 @@ export default function MessageForm({ id, openImageModal }: Props) {
         <FaCirclePlus className="text-dark-gray w-5 h-5" />
       </button>
       <span
+        id="textarea"
         onInput={(e) => {
           const node = e.target as Element;
           console.log(node.innerHTML);
