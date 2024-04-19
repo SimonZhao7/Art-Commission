@@ -2,13 +2,17 @@
 import { useState, useEffect, useRef } from "react";
 // Firebase
 import {
-  onSnapshot,
   query,
   collection,
   where,
   getDoc,
+  getDocs,
   doc,
   orderBy,
+  limit,
+  startAfter,
+  DocumentData,
+  QuerySnapshot,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 // Components
@@ -20,6 +24,8 @@ import { useAuth } from "@/hooks/useFirebaseUser";
 import { BiChevronDown } from "react-icons/bi";
 import MessageForm from "./MessageForm";
 import { useModal } from "@/hooks/useModal";
+// Types
+import { User } from "@/types/user";
 
 interface Props {
   params: {
@@ -27,7 +33,7 @@ interface Props {
   };
 }
 
-interface Message {
+export interface Message {
   id: string;
   chatId: string;
   message: string;
@@ -36,14 +42,9 @@ interface Message {
   timestamp: Date;
 }
 
-interface User {
-  id: string;
-  username: string;
-  profileImage: string;
-}
-
 export default function Chat({ params }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState<boolean>(false);
   const {
     modalOpen: imageModalOpen,
@@ -56,33 +57,24 @@ export default function Chat({ params }: Props) {
   const chatBottom = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const q = query(
-      collection(db, "messages"),
-      where("chatId", "==", params.id),
-      orderBy("timestamp")
-    );
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const res: Message[] = await Promise.all(
-        snapshot.docs.map(async (d) => {
-          const id = d.id;
-          const uid = d.data().senderId;
-          const userDoc = await getDoc(doc(db, "users", uid));
-          return {
-            ...d.data(),
-            id,
-            sender: { id: userDoc.id, ...userDoc.data() } as User,
-          } as Message;
-        })
+    const fetchNewMsgs = async () => {
+      const q = query(
+        collection(db, "messages"),
+        where("chatId", "==", params.id),
+        orderBy("timestamp", "desc"),
+        limit(10)
       );
-      setMessages(res);
-    });
-    return () => unsubscribe();
+      const data = await getDocs(q);
+      const msgs = await fillSenderData(data);
+      msgs.reverse();
+      setMessages([...msgs]);
+    };
+    fetchNewMsgs();
   }, []);
 
   useEffect(() => {
     if (
-      (messages.length > 0 &&
-        messages.at(-1)!.sender.id === currentUser?.uid) ||
+      (messages.length > 0 && messages.at(-1)!.sender.id === currentUser?.id) ||
       scrollBottom.current
     ) {
       chatBottom.current?.scrollIntoView();
@@ -98,6 +90,10 @@ export default function Chat({ params }: Props) {
         setShowScrollBottom(false);
       }
 
+      if (div.scrollTop <= 0 && !loading) {
+        fetchNextPage();
+      }
+
       scrollBottom.current =
         Math.abs(div.scrollHeight - div.clientHeight - div.scrollTop) < 1;
     };
@@ -106,25 +102,59 @@ export default function Chat({ params }: Props) {
     return () => {
       chatDiv.current?.removeEventListener("scroll", handleScrollEvent);
     };
-  }, []);
+  }, [loading, messages]);
+
+  const fetchNextPage = async () => {
+    setLoading(true);
+    if (messages.length > 0) {
+      const q = query(
+        collection(db, "messages"),
+        where("chatId", "==", params.id),
+        orderBy("timestamp", "desc"),
+        limit(10),
+        startAfter(messages[0].timestamp)
+      );
+      const data = await getDocs(q);
+      const newMsgs = await fillSenderData(data);
+      newMsgs.reverse();
+      setMessages([...newMsgs, ...messages]);
+    }
+    setLoading(false);
+  };
+
+  const fillSenderData = (data: QuerySnapshot<DocumentData>) => {
+    return Promise.all(
+      data.docs.map(async (d) => {
+        const senderId = d.data().senderId;
+        const user = await getDoc(doc(db, "users", senderId));
+        return {
+          id: d.id,
+          ...d.data(),
+          sender: { id: senderId, ...user.data() } as User,
+        } as Message;
+      })
+    );
+  };
 
   return (
     <section className="flex-[2] flex flex-col">
       <div className="flex-1 w-full p-10 pb-20 overflow-y-scroll" ref={chatDiv}>
+        {loading && <h1 className="text-slight-gray">Loading ...</h1>}
         {messages.map((msg) => {
-          const fromSelf = msg.sender.id === currentUser?.uid;
+          const fromSelf = msg.sender.id === currentUser?.id;
           return (
             <div
               key={msg.id}
+              id={msg.id}
               className={`flex mb-4 font-montserrat ${
-                msg.sender.id === currentUser?.uid && "flex-row-reverse"
+                msg.sender.id === currentUser?.id && "flex-row-reverse"
               }`}
             >
               <img
                 src={msg.sender.profileImage}
                 alt={msg.sender.username}
                 className={`h-[50px] w-[50px] border-2 border-light-gray ${
-                  msg.sender.id === currentUser?.uid ? "ml-5" : "mr-5"
+                  msg.sender.id === currentUser?.id ? "ml-5" : "mr-5"
                 } rounded-full`}
               />
               {msg.messageType == "TEXT" ? (

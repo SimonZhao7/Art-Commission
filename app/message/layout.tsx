@@ -44,7 +44,7 @@ export default function Layout({ children }: { children: ReactElement }) {
   useEffect(() => {
     const q = query(
       collection(db, "chats"),
-      where("userIds", "array-contains", currentUser?.uid ?? "")
+      where("userIds", "array-contains", currentUser?.id ?? "")
     );
 
     const unsub = onSnapshot(q, async (data) => {

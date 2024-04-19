@@ -29,7 +29,7 @@ const ChatTabs: ChatTabsComponent = ({ chats, openModal }) => {
             <img
               className="w-10 h-10 rounded-full border-light-gray border-2"
               src={
-                chat.users.filter((user) => user.id !== currentUser.uid)[0]
+                chat.users.filter((user) => user.id !== currentUser.id)[0]
                   ?.profileImage
               }
               alt="chat user profile image"
@@ -37,7 +37,7 @@ const ChatTabs: ChatTabsComponent = ({ chats, openModal }) => {
           )}
           <p className="text-ellipsis overflow-hidden">
             {chat.users
-              .filter((user) => user.id !== currentUser?.uid)
+              .filter((user) => user.id !== currentUser?.id)
               .map((user) => user.username)
               .join(", ")}
           </p>

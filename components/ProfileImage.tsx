@@ -2,16 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 // Firebase
-import { collection, getDoc, doc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase";
-import { db } from "@/firebase";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
 // Framer Motion
 import { motion } from "framer-motion";
 // Types
-import { User } from "@/types/user";
 import Link from "next/link";
 
 const wrapperVariant = {
@@ -51,22 +48,12 @@ const linkVariant = {
 };
 
 export default function ProfileImage() {
-  const [user, setUser] = useState<User | null>(null);
   const [showMenu, setShowMenu] = useState(false);
   const currentUser = useAuth();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
   const MotionLink = motion(Link);
-
-  useEffect(() => {
-    if (currentUser !== null) {
-      getDoc(doc(collection(db, "users"), currentUser?.uid)).then((res) => {
-        const userDetails = { id: res.id, ...res.data() } as User;
-        setUser(userDetails);
-      });
-    }
-  }, [currentUser]);
 
   const clickEventHandler = (e: MouseEvent) => {
     e.stopPropagation();
@@ -96,7 +83,7 @@ export default function ProfileImage() {
       {currentUser !== null ? (
         <img
           className="w-10 h-10 rounded-full border-2 border-light-gray cursor-pointer hover:scale-110 transition-all duration-100 ease-out"
-          src={user?.profileImage}
+          src={currentUser?.profileImage}
           ref={imageRef}
           onClick={() => setShowMenu(!showMenu)}
         />
@@ -117,7 +104,7 @@ export default function ProfileImage() {
           key={1}
           variants={linkVariant}
           className="link"
-          href={`/${user?.username}`}
+          href={`/${currentUser?.username}`}
         >
           Profile
         </MotionLink>

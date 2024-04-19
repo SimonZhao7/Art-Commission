@@ -25,7 +25,7 @@ export default function MessageForm({ id, openImageModal }: Props) {
         chatId: id,
         message,
         messageType: "TEXT",
-        senderId: currentUser.uid,
+        senderId: currentUser.id,
         timestamp: serverTimestamp(),
       });
       const el = document.getElementById("textarea");
@@ -46,7 +46,6 @@ export default function MessageForm({ id, openImageModal }: Props) {
         id="textarea"
         onInput={(e) => {
           const node = e.target as Element;
-          console.log(node.innerHTML);
           setMessage(node.innerHTML!);
         }}
         placeholder="Message..."
