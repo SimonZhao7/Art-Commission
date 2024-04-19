@@ -18,6 +18,7 @@ import { db } from "@/firebase";
 // Components
 import AddImageForm from "./AddImageForm";
 import ChatImage from "./ChatImage";
+import Spinner from "@/components/Spinner";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
 // Icons
@@ -55,6 +56,7 @@ export default function Chat({ params }: Props) {
   const scrollBottom = useRef<boolean>(true);
   const chatDiv = useRef<HTMLDivElement | null>(null);
   const chatBottom = useRef<HTMLDivElement | null>(null);
+  const offFromBottom = useRef(0);
 
   useEffect(() => {
     const fetchNewMsgs = async () => {
@@ -73,15 +75,33 @@ export default function Chat({ params }: Props) {
   }, []);
 
   useEffect(() => {
-    if (
-      (messages.length > 0 && messages.at(-1)!.sender.id === currentUser?.id) ||
-      scrollBottom.current
-    ) {
-      chatBottom.current?.scrollIntoView();
+    if (messages.length > 0 && chatDiv.current) {
+      const scrollHeight = chatDiv.current.scrollHeight;
+      chatDiv.current.scroll(0, scrollHeight - offFromBottom.current);
     }
   }, [messages]);
 
   useEffect(() => {
+    const fetchNextPage = async () => {
+      setLoading(true);
+      if (messages.length > 0) {
+        setTimeout(async () => {
+          const q = query(
+            collection(db, "messages"),
+            where("chatId", "==", params.id),
+            orderBy("timestamp", "desc"),
+            limit(10),
+            startAfter(messages[0].timestamp)
+          );
+          const data = await getDocs(q);
+          const newMsgs = await fillSenderData(data);
+          newMsgs.reverse();
+          setMessages([...newMsgs, ...messages]);
+        }, 2000);
+      }
+      setLoading(false);
+    };
+
     const handleScrollEvent = () => {
       const div = chatDiv.current!;
       if (div.scrollTop < div.scrollHeight - 800) {
@@ -91,6 +111,7 @@ export default function Chat({ params }: Props) {
       }
 
       if (div.scrollTop <= 0 && !loading) {
+        offFromBottom.current = div.scrollHeight;
         fetchNextPage();
       }
 
@@ -103,24 +124,6 @@ export default function Chat({ params }: Props) {
       chatDiv.current?.removeEventListener("scroll", handleScrollEvent);
     };
   }, [loading, messages]);
-
-  const fetchNextPage = async () => {
-    setLoading(true);
-    if (messages.length > 0) {
-      const q = query(
-        collection(db, "messages"),
-        where("chatId", "==", params.id),
-        orderBy("timestamp", "desc"),
-        limit(10),
-        startAfter(messages[0].timestamp)
-      );
-      const data = await getDocs(q);
-      const newMsgs = await fillSenderData(data);
-      newMsgs.reverse();
-      setMessages([...newMsgs, ...messages]);
-    }
-    setLoading(false);
-  };
 
   const fillSenderData = (data: QuerySnapshot<DocumentData>) => {
     return Promise.all(
@@ -139,7 +142,11 @@ export default function Chat({ params }: Props) {
   return (
     <section className="flex-[2] flex flex-col">
       <div className="flex-1 w-full p-10 pb-20 overflow-y-scroll" ref={chatDiv}>
-        {loading && <h1 className="text-slight-gray">Loading ...</h1>}
+        {loading && (
+          <div className="w-full flex justify-center">
+            <Spinner size={30} />
+          </div>
+        )}
         {messages.map((msg) => {
           const fromSelf = msg.sender.id === currentUser?.id;
           return (

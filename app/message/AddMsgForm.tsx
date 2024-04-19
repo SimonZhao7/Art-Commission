@@ -44,13 +44,13 @@ export default function AddMsgForm({ closeForm }: { closeForm: () => void }) {
     const recipientId = q.docs[0];
 
     const chat = await addDoc(collection(db, "chats"), {
-      userIds: [currentUser!.uid, recipientId.id],
+      userIds: [currentUser!.id, recipientId.id],
       messages: [],
     });
 
     if (initMsg !== undefined) {
       const msgRef = await addDoc(collection(db, "messages"), {
-        senderId: currentUser?.uid,
+        senderId: currentUser?.id,
         chatId: chat.id,
         message: initMsg,
         messageType: "TEXT",
