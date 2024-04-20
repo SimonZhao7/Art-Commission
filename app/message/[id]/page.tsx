@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, UIEventHandler } from "react";
 // Firebase
 import {
   query,
@@ -16,15 +16,15 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 // Components
-import AddImageForm from "./AddImageForm";
 import ChatImage from "./ChatImage";
+import MessageForm from "./MessageForm";
+import AddImageForm from "./AddImageForm";
 import Spinner from "@/components/Spinner";
 // Hooks
+import { useModal } from "@/hooks/useModal";
 import { useAuth } from "@/hooks/useFirebaseUser";
 // Icons
 import { BiChevronDown } from "react-icons/bi";
-import MessageForm from "./MessageForm";
-import { useModal } from "@/hooks/useModal";
 // Types
 import { User } from "@/types/user";
 
@@ -43,6 +43,8 @@ export interface Message {
   timestamp: Date;
 }
 
+const LIMIT = 10;
+
 export default function Chat({ params }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
@@ -53,10 +55,10 @@ export default function Chat({ params }: Props) {
     closeModal: closeImageModal,
   } = useModal(false);
   const currentUser = useAuth();
-  const scrollBottom = useRef<boolean>(true);
   const chatDiv = useRef<HTMLDivElement | null>(null);
   const chatBottom = useRef<HTMLDivElement | null>(null);
   const offFromBottom = useRef(0);
+  const hasNextPage = messages.length % LIMIT === 0;
 
   useEffect(() => {
     const fetchNewMsgs = async () => {
@@ -64,7 +66,7 @@ export default function Chat({ params }: Props) {
         collection(db, "messages"),
         where("chatId", "==", params.id),
         orderBy("timestamp", "desc"),
-        limit(10)
+        limit(LIMIT)
       );
       const data = await getDocs(q);
       const msgs = await fillSenderData(data);
@@ -81,49 +83,42 @@ export default function Chat({ params }: Props) {
     }
   }, [messages]);
 
-  useEffect(() => {
-    const fetchNextPage = async () => {
-      setLoading(true);
-      if (messages.length > 0) {
-        setTimeout(async () => {
-          const q = query(
-            collection(db, "messages"),
-            where("chatId", "==", params.id),
-            orderBy("timestamp", "desc"),
-            limit(10),
-            startAfter(messages[0].timestamp)
-          );
-          const data = await getDocs(q);
-          const newMsgs = await fillSenderData(data);
-          newMsgs.reverse();
-          setMessages([...newMsgs, ...messages]);
-        }, 2000);
+  const fetchNextPage = async () => {
+    // Reduce call rate
+    setTimeout(async () => {
+      const q = query(
+        collection(db, "messages"),
+        where("chatId", "==", params.id),
+        orderBy("timestamp", "desc"),
+        limit(LIMIT),
+        startAfter(messages[0].timestamp)
+      );
+      const data = await getDocs(q);
+      if (data.docs.length > 0) {
+        const newMsgs = await fillSenderData(data);
+        newMsgs.reverse();
+        setMessages([...newMsgs, ...messages]);
       }
       setLoading(false);
-    };
+    }, 500);
+  };
 
-    const handleScrollEvent = () => {
-      const div = chatDiv.current!;
-      if (div.scrollTop < div.scrollHeight - 800) {
-        setShowScrollBottom(true);
-      } else {
-        setShowScrollBottom(false);
+  const handleScrollEvent: UIEventHandler<HTMLDivElement> = async (e) => {
+    const div = e.currentTarget;
+    if (div.scrollTop < div.scrollHeight - 800) {
+      setShowScrollBottom(true);
+    } else {
+      setShowScrollBottom(false);
+    }
+
+    if (div.scrollTop <= 0 && !loading && hasNextPage) {
+      offFromBottom.current = div.scrollHeight;
+      if (messages.length > 0 && hasNextPage) {
+        setLoading(true);
+        await fetchNextPage();
       }
-
-      if (div.scrollTop <= 0 && !loading) {
-        offFromBottom.current = div.scrollHeight;
-        fetchNextPage();
-      }
-
-      scrollBottom.current =
-        Math.abs(div.scrollHeight - div.clientHeight - div.scrollTop) < 1;
-    };
-
-    chatDiv.current?.addEventListener("scroll", handleScrollEvent);
-    return () => {
-      chatDiv.current?.removeEventListener("scroll", handleScrollEvent);
-    };
-  }, [loading, messages]);
+    }
+  };
 
   const fillSenderData = (data: QuerySnapshot<DocumentData>) => {
     return Promise.all(
@@ -141,12 +136,20 @@ export default function Chat({ params }: Props) {
 
   return (
     <section className="flex-[2] flex flex-col">
-      <div className="flex-1 w-full p-10 pb-20 overflow-y-scroll" ref={chatDiv}>
-        {loading && (
-          <div className="w-full flex justify-center">
-            <Spinner size={30} />
-          </div>
-        )}
+      <div
+        className="flex-1 w-full p-10 pb-20 overflow-y-scroll"
+        onScroll={handleScrollEvent}
+        ref={chatDiv}
+      >
+        <div className="w-full flex justify-center">
+          {!hasNextPage && (
+            <h1 className="text-light-gray text-sm font-montserrat mb-10">
+              This is the beginnning of your conversation.
+            </h1>
+          )}
+          {loading && <Spinner size={30} />}
+        </div>
+
         {messages.map((msg) => {
           const fromSelf = msg.sender.id === currentUser?.id;
           return (
