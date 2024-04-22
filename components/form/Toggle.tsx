@@ -16,8 +16,9 @@ const Toggle = ({ active, register }: Props) => {
   return (
     <div
       className={clsx(
-        "w-24 p-[6px] rounded-full inline-flex flex-col justify-center transition-colors linear duration-300 cursor-pointer",
-        active ? "bg-green-500" : "bg-med-gray"
+        `linear inline-flex w-24 cursor-pointer flex-col justify-center rounded-full
+        p-[6px] transition-colors duration-300`,
+        active ? "bg-green-500" : "bg-med-gray",
       )}
       onClick={() => {
         if (checkbox.current) {
@@ -28,8 +29,8 @@ const Toggle = ({ active, register }: Props) => {
     >
       <div
         className={clsx(
-          "bg-white w-4 h-4 rounded-full transition-transform linear duration-200 shadow-lg",
-          active && "translate-x-[68px]"
+          "linear h-4 w-4 rounded-full bg-white shadow-lg transition-transform duration-200",
+          active && "translate-x-[68px]",
         )}
       ></div>
       <input

@@ -26,7 +26,9 @@ export const GoogleSigninBtn = () => {
   return (
     <>
       <button
-        className="bg-white w-full flex gap-5 justify-center items-center border-1 border-[1px] shadow-sm py-3 rounded-full hover:bg-dark-gray cursor-pointer duration-100 transition-all relative font-montserrat"
+        className="border-1 relative flex w-full cursor-pointer items-center justify-center gap-5
+          rounded-full border-[1px] bg-white py-3 font-montserrat shadow-sm transition-all
+          duration-100 hover:bg-dark-gray"
         onClick={handleRegister}
       >
         <Image
@@ -37,7 +39,7 @@ export const GoogleSigninBtn = () => {
         />
         Sign In With Google
       </button>
-      {error && <p className="text-err mt-3 text-sm">{error}</p>}
+      {error && <p className="mt-3 text-sm text-err">{error}</p>}
     </>
   );
 };

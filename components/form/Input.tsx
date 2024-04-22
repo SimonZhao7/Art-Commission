@@ -33,12 +33,13 @@ export default function Input({
 }: InputProps) {
   return (
     <div className={clsx("mb-3 justify-self-center", containerClsExt)}>
-      <label className="block mb-1 text-sm">{label}</label>
+      <label className="mb-1 block text-sm">{label}</label>
       <input
         className={clsx(
-          "border-2 rounded-md outline-none p-3 w-full h-10 text-sm transition-all duration-100",
+          `h-10 w-full rounded-md border-2 p-3 text-sm outline-none transition-all
+          duration-100`,
           error ? "border-red-500" : "border-gray-300 hover:border-gray-400",
-          classExtend
+          classExtend,
         )}
         type={type}
         placeholder={placeholder}
@@ -46,7 +47,7 @@ export default function Input({
         {...register(name, regProps)}
       />
       {error && (
-        <div className="text-red-500 text-sm flex items-center gap-1">
+        <div className="flex items-center gap-1 text-sm text-red-500">
           <CgDanger />
           <span>{error}</span>
         </div>

@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 // Types
-import { User } from '@/types/user';
+import { User } from "@/types/user";
 import { Chat } from "@/types/chat";
 // Components
 import AddMsgForm from "./AddMsgForm";
@@ -21,7 +21,6 @@ import ChatTabs from "./ChatTabs";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
 import { useModal } from "@/hooks/useModal";
-
 
 export default function Layout({ children }: { children: ReactElement }) {
   const { modalOpen, openModal, closeModal } = useModal(false);
@@ -44,7 +43,7 @@ export default function Layout({ children }: { children: ReactElement }) {
   useEffect(() => {
     const q = query(
       collection(db, "chats"),
-      where("userIds", "array-contains", currentUser?.id ?? "")
+      where("userIds", "array-contains", currentUser?.id ?? ""),
     );
 
     const unsub = onSnapshot(q, async (data) => {
@@ -55,10 +54,10 @@ export default function Layout({ children }: { children: ReactElement }) {
             userIds.map(async (uid) => {
               const userDoc = await getDoc(doc(db, "users", uid));
               return { id: userDoc.id, ...userDoc.data() } as User;
-            })
+            }),
           );
           return { id: d.id, ...d.data(), users } as Chat;
-        })
+        }),
       );
       setChats(chats);
     });
@@ -69,12 +68,13 @@ export default function Layout({ children }: { children: ReactElement }) {
     <main className="flex h-full">
       {modalOpen && (
         <div
-          className="flex items-center justify-center w-full h-full absolute bg-black bg-opacity-60 z-10 top-0"
+          className="absolute top-0 z-10 flex h-full w-full items-center justify-center bg-black
+            bg-opacity-60"
           ref={bgRef}
         >
           <AddMsgForm
             closeForm={() => {
-              closeModal
+              closeModal;
             }}
           />
         </div>

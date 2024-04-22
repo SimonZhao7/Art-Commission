@@ -39,7 +39,7 @@ export default function AddMsgForm({ closeForm }: { closeForm: () => void }) {
   const formSubmit: SubmitHandler<AddMsgFields> = async (data) => {
     const { username, initMsg } = data;
     const q = await getDocs(
-      query(collection(db, "users"), where("username", "==", username))
+      query(collection(db, "users"), where("username", "==", username)),
     );
     const recipientId = q.docs[0];
 
@@ -67,7 +67,7 @@ export default function AddMsgForm({ closeForm }: { closeForm: () => void }) {
 
   return (
     <form
-      className="bg-white p-10 w-full max-w-xl rounded-md"
+      className="w-full max-w-xl rounded-md bg-white p-10"
       onSubmit={handleSubmit(formSubmit)}
     >
       <Input
@@ -77,7 +77,7 @@ export default function AddMsgForm({ closeForm }: { closeForm: () => void }) {
         regProps={{
           validate: (value) => {
             return getDocs(
-              query(collection(db, "users"), where("username", "==", value))
+              query(collection(db, "users"), where("username", "==", value)),
             ).then((snapshot) => {
               if (snapshot.empty || currentUser!.email === value)
                 return "Provided username does not exist.";
@@ -88,7 +88,8 @@ export default function AddMsgForm({ closeForm }: { closeForm: () => void }) {
         error={errors.username?.message}
       />
       <textarea
-        className="w-full resize-none border-2 mb-2 p-3 text-sm outline-none border-med-gray rounded-md"
+        className="mb-2 w-full resize-none rounded-md border-2 border-med-gray p-3 text-sm
+          outline-none"
         {...register("initMsg")}
         rows={5}
         placeholder="Send a message..."

@@ -11,14 +11,15 @@ export default function ChatImage({ src }: { src: string }) {
         ref={image}
         src={src}
         className={clsx(
-          "rounded-lg w-[220px] max-h-[400px] object-cover cursor-pointer",
+          "max-h-[400px] w-[220px] cursor-pointer rounded-lg object-cover",
           !image.current?.complete && "h-[400px]",
         )}
         onClick={() => setClickedImage(true)}
       />
       {clickedImage && (
         <div
-          className="absolute z-20 w-screen h-screen top-0 left-0 py-20 flex justify-center bg-black bg-opacity-60"
+          className="absolute left-0 top-0 z-20 flex h-screen w-screen justify-center bg-black
+            bg-opacity-60 py-20"
           onClick={() => setClickedImage(false)}
         >
           <img ref={image} src={src} className="h-full object-cover" />

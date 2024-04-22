@@ -48,9 +48,9 @@ const CreateCommissionForm = () => {
 
   return (
     <FormProvider {...formMethods}>
-      <form className="mx-auto max-w-xl 2xl:max-w-7xl pb-20">
+      <form className="mx-auto max-w-xl pb-20 2xl:max-w-7xl">
         <HeaderTitleInput />
-        <div className="p-4 w-full flex items-center justify-between shadow-sm">
+        <div className="flex w-full items-center justify-between p-4 shadow-sm">
           <label className="text-md">Make Public</label>
           <Toggle active={visible} register={register} />
         </div>
@@ -64,7 +64,8 @@ const CreateCommissionForm = () => {
           <label>Description</label>
           <textarea
             value={description}
-            className="w-full resize-y border-[1px] border-light-gray rounded-sm outline-none p-5 text-sm h-[250px] shadow-sm"
+            className="h-[250px] w-full resize-y rounded-sm border-[1px] border-light-gray p-5 text-sm
+              shadow-sm outline-none"
           ></textarea>
         </div>
         {/* <div
@@ -73,7 +74,7 @@ const CreateCommissionForm = () => {
       }}
     ></div> */}
         <div className="my-20">
-          <h2 className="text-2xl mb-10">Commission Packages</h2>
+          <h2 className="mb-10 text-2xl">Commission Packages</h2>
           <PackageRow openModal={openCreatePackageModal} />
         </div>
         <h2 className="text-2xl">Commission Add-ons</h2>

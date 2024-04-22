@@ -82,19 +82,23 @@ export default function ProfileImage() {
     <>
       {currentUser !== null ? (
         <img
-          className="w-10 h-10 rounded-full border-2 border-light-gray cursor-pointer hover:scale-110 transition-all duration-100 ease-out"
+          className="h-10 w-10 cursor-pointer rounded-full border-2 border-light-gray transition-all
+            duration-100 ease-out hover:scale-110"
           src={currentUser?.profileImage}
           ref={imageRef}
           onClick={() => setShowMenu(!showMenu)}
         />
       ) : (
-        <div className="w-[135px] h-10 bg-dark-purple-highlight btn-glow hover:bg-dark-purple-hover text-black rounded-md font-md font-montserrat flex justify-center items-center">
+        <div
+          className="btn-glow font-md flex h-10 w-[135px] items-center justify-center rounded-md
+            bg-dark-purple-highlight font-montserrat text-black hover:bg-dark-purple-hover"
+        >
           <Link href="/auth/signin">Sign in</Link>
         </div>
       )}
       <motion.div
         ref={menuRef}
-        className="absolute top-16 right-0 shadow-md w-60 bg-white rounded-md"
+        className="absolute right-0 top-16 w-60 rounded-md bg-white shadow-md"
         variants={wrapperVariant}
         initial={"hidden"}
         animate={showMenu ? "visible" : "hidden"}

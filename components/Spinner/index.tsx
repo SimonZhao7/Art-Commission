@@ -6,7 +6,9 @@ const Spinner: FunctionComponent<SpinnerProps> = ({ size }) => {
   return (
     <div
       style={{ width: `${size}px`, height: `${size}px` }}
-      className={`border-white border-4 animate-spin rounded-full border-t-transparent`}
+      className={
+        "animate-spin rounded-full border-4 border-white border-t-transparent"
+      }
     >
       &nbsp;
     </div>

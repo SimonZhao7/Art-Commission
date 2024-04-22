@@ -14,31 +14,32 @@ const EditCarousel = ({ images, closeModal, removeImage }: Props) => {
 
   return (
     <div
-      className="flex items-center justify-center w-screen h-screen absolute p-10 top-0 left-0 z-60 bg-black bg-opacity-60"
+      className="z-60 absolute left-0 top-0 flex h-screen w-screen items-center justify-center
+        bg-black bg-opacity-60 p-10"
       onClick={closeModal}
     >
       <div
-        className="image p-10 rounded-sm bg-white w-full max-w-xl"
+        className="image w-full max-w-xl rounded-sm bg-white p-10"
         onClick={(e) => e.stopPropagation()}
       >
-        <h1 className="text-center mb-10 text-2xl">Edit Image List</h1>
+        <h1 className="mb-10 text-center text-2xl">Edit Image List</h1>
         <div onDragOver={handleDragOver}>
           {images.map((image, i) => (
             <div
               draggable={true}
-              className={`edit-item flex items-center gap-4 h-[100px] w-full ${
+              className={`edit-item flex h-[100px] w-full items-center gap-4 ${
                 i < images.length - 1 && "mb-4"
               }`}
             >
-              <GrDrag className="w-5 h-5" />
+              <GrDrag className="h-5 w-5" />
               <img
-                className="flex-1 block h-full object-cover rounded-md border-[1px] border-med-gray"
+                className="block h-full flex-1 rounded-md border-[1px] border-med-gray object-cover"
                 key={image.url}
                 src={image.url}
                 alt={`Edit Image ${image.url}`}
               />
               <BsTrash3Fill
-                className="w-5 h-5"
+                className="h-5 w-5"
                 onClick={() => removeImage(i)}
               />
             </div>

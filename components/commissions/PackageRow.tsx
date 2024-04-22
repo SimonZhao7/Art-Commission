@@ -14,20 +14,21 @@ const PackageRow = ({ openModal }: Props) => {
   const packages = useWatch({ control, name: "packages" });
 
   return (
-    <div className="flex h-[350px] overflow-x-scroll space-x-4">
+    <div className="flex h-[350px] space-x-4 overflow-x-scroll">
       <button
         type="button"
         onClick={openModal}
-        className="bg-med-gray h-full w-[175px] flex items-center justify-center cursor-pointer transition-colors ease rounded-lg hover:bg-light-gray flex-shrink-0"
+        className="ease flex h-full w-[175px] flex-shrink-0 cursor-pointer items-center
+          justify-center rounded-lg bg-med-gray transition-colors hover:bg-light-gray"
       >
         <AiOutlinePlus size={60} />
       </button>
       {packages.map((p, i) => (
         <div
           key={i}
-          className="bg-light-gray rounded-lg p-7 w-[400px] flex-shrink-0"
+          className="w-[400px] flex-shrink-0 rounded-lg bg-light-gray p-7"
         >
-          <h2 className="text-2xl mb-5">{p.title}</h2>
+          <h2 className="mb-5 text-2xl">{p.title}</h2>
           <p className="mb-2">{p.details}</p>
           <div className="flex justify-between">
             <p>Revisions:</p>

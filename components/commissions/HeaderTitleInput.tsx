@@ -28,22 +28,25 @@ const HeaderTitleInput = () => {
   }, [showTitleInput]);
 
   return (
-    <div className="w-full p-5 flex items-center justify-between shadow-md border-[1px] border-slight-gray">
+    <div
+      className="flex w-full items-center justify-between border-[1px] border-slight-gray p-5
+        shadow-md"
+    >
       <input
         {...register("title")}
-        className="outline-none disabled:bg-transparent w-[300px] overflow-ellipsis"
+        className="w-[300px] overflow-ellipsis outline-none disabled:bg-transparent"
         disabled={!showTitleInput}
         ref={titleInput}
         defaultValue={"A New Commission"}
       />
       {showTitleInput ? (
         <FiCheck
-          className="w-5 h-5 cursor-pointer"
+          className="h-5 w-5 cursor-pointer"
           onClick={() => setShowTitleInput(false)}
         />
       ) : (
         <FiEdit
-          className="w-5 h-5 cursor-pointer"
+          className="h-5 w-5 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation();
             setShowTitleInput(true);

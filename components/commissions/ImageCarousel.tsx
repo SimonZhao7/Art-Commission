@@ -58,7 +58,7 @@ export default function ImageCarousel({
 
   return (
     <section className="my-20">
-      <div className={`flex w-full gap-2`} style={{ height: `${height}px` }}>
+      <div className={"flex w-full gap-2"} style={{ height: `${height}px` }}>
         <button
           type="button"
           className="carousel-btn"
@@ -72,17 +72,21 @@ export default function ImageCarousel({
             })
           }
         >
-          <BsChevronCompactLeft className="w-10 h-10" />
+          <BsChevronCompactLeft className="h-10 w-10" />
         </button>
         {images.length > 0 ? (
           <img
             src={images[index].url}
             alt={`Image at index ${index}`}
-            className="flex-1 w-full h-full object-cover border-2 border-light-gray shadow-sm rounded-md p-[1px]"
+            className="h-full w-full flex-1 rounded-md border-2 border-light-gray object-cover p-[1px]
+              shadow-sm"
           />
         ) : (
-          <div className="flex-1 flex flex-col gap-4 items-center justify-center border-2 border-light-gray">
-            <LuImagePlus className="w-20 h-20" />
+          <div
+            className="flex flex-1 flex-col items-center justify-center gap-4 border-2
+              border-light-gray"
+          >
+            <LuImagePlus className="h-20 w-20" />
             <h1>Upload your sample photos!</h1>
           </div>
         )}
@@ -91,28 +95,28 @@ export default function ImageCarousel({
           className="carousel-btn"
           onClick={() => setIndex((prev) => (prev + 1) % images.length)}
         >
-          <BsChevronCompactRight className="w-10 h-10" />
+          <BsChevronCompactRight className="h-10 w-10" />
         </button>
       </div>
-      <div className="flex items-center justify-between px-12 mt-3">
+      <div className="mt-3 flex items-center justify-between px-12">
         <button
           type="button"
-          className="flex items-center gap-2 bg-light-gray text-sm px-5 py-2 rounded-md"
+          className="flex items-center gap-2 rounded-md bg-light-gray px-5 py-2 text-sm"
           onClick={() => fileRef.current?.click()}
         >
-          <AiOutlinePlus className="w-4 h-4" /> Add
+          <AiOutlinePlus className="h-4 w-4" /> Add
         </button>
         <div className="flex items-center justify-center gap-2">
           {images.map((image, idx) => {
             return idx === index ? (
               <div
                 key={image.url}
-                className="w-4 h-4 bg-med-gray rounded-full cursor-pointer"
+                className="h-4 w-4 cursor-pointer rounded-full bg-med-gray"
               ></div>
             ) : (
               <div
                 key={image.url}
-                className="w-3 h-3 border-med-gray border-[1px] rounded-full cursor-pointer"
+                className="h-3 w-3 cursor-pointer rounded-full border-[1px] border-med-gray"
                 onClick={() => setIndex(idx)}
               ></div>
             );
@@ -120,10 +124,10 @@ export default function ImageCarousel({
         </div>
         <button
           type="button"
-          className="flex items-center gap-2 bg-light-gray text-sm px-5 py-2 rounded-md"
+          className="flex items-center gap-2 rounded-md bg-light-gray px-5 py-2 text-sm"
           onClick={() => setEditOpen(true)}
         >
-          <FiEdit className="w-4 h-4" /> Edit
+          <FiEdit className="h-4 w-4" /> Edit
         </button>
       </div>
       <input

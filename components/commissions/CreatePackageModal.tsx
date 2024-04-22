@@ -53,9 +53,9 @@ const CreatePackageModal = ({ closeModal }: Props) => {
       exit="closed"
       transition={{ ease: "easeOut", duration: 0.3 }}
       variants={modalVariant}
-      className="absolute top-0 left-0 w-screen h-screen bg-white flex flex-col"
+      className="absolute left-0 top-0 flex h-screen w-screen flex-col bg-white"
     >
-      <h1 className={`text-3xl p-5 pl-10 ${montserrat.className}`}>
+      <h1 className={`p-5 pl-10 text-3xl ${montserrat.className}`}>
         Add a package
       </h1>
       <button className="absolute right-0 top-0 p-5" onClick={closeModal}>
@@ -63,15 +63,15 @@ const CreatePackageModal = ({ closeModal }: Props) => {
       </button>
       <form
         onSubmit={handleSubmit(createPackage)}
-        className="flex-1 flex flex-col items-center justify-center w-full"
+        className="flex w-full flex-1 flex-col items-center justify-center"
       >
         <div className="w-[700px]">
           <div className="mb-4">
             <label className="text-sm">Title</label>
             <input
               className={clsx(
-                "underline-input outline-none w-full p-2",
-                errors.title && inputError
+                "underline-input w-full p-2 outline-none",
+                errors.title && inputError,
               )}
               {...register("title")}
             />
@@ -82,12 +82,12 @@ const CreatePackageModal = ({ closeModal }: Props) => {
             <div
               className={clsx(
                 "underline-input",
-                errors.deliveryTime && inputError
+                errors.deliveryTime && inputError,
               )}
             >
               <input
                 {...register("deliveryTime")}
-                className="flex-1 p-3 pl-1 h-10 outline-none"
+                className="h-10 flex-1 p-3 pl-1 outline-none"
                 type="number"
               />
               <span>days</span>
@@ -97,17 +97,17 @@ const CreatePackageModal = ({ closeModal }: Props) => {
             )}
           </div>
 
-          <div className="flex gap-4 mb-4">
+          <div className="mb-4 flex gap-4">
             <div className="flex-1">
               <label className="text-sm">Number of revisions</label>
               <div
                 className={clsx(
                   "underline-input",
-                  errors.revisions && inputError
+                  errors.revisions && inputError,
                 )}
               >
                 <input
-                  className="p-3 flex-1 pl-1 h-10 outline-none"
+                  className="h-10 flex-1 p-3 pl-1 outline-none"
                   {...register("revisions")}
                   type="number"
                 />
@@ -124,7 +124,7 @@ const CreatePackageModal = ({ closeModal }: Props) => {
                 <span>$</span>
                 <input
                   {...register("price")}
-                  className="flex-1 p-3 pl-1 h-10 outline-none"
+                  className="h-10 flex-1 p-3 pl-1 outline-none"
                   type="number"
                 />
               </div>
@@ -133,14 +133,15 @@ const CreatePackageModal = ({ closeModal }: Props) => {
               )}
             </div>
           </div>
-          <label className="text-sm mb-2 block">Description</label>
+          <label className="mb-2 block text-sm">Description</label>
           <textarea
             {...register("details")}
-            className="w-full resize-none h-[300px] outline-none border-med-gray border-2 rounded-md p-5 mb-4"
+            className="mb-4 h-[300px] w-full resize-none rounded-md border-2 border-med-gray p-5
+              outline-none"
           ></textarea>
           <button
             type="submit"
-            className="bg-jet hover:bg-jet-hover text-white w-full h-10 rounded-md py-2"
+            className="h-10 w-full rounded-md bg-jet py-2 text-white hover:bg-jet-hover"
           >
             Add package
           </button>

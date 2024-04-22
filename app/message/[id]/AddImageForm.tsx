@@ -38,7 +38,7 @@ export default function AddImageForm({ chatId, closeModal }: Props) {
     e.preventDefault();
     const chatImageRef = storageRef(
       storage,
-      `chat-images/${crypto.randomUUID()}-${image!.name}`
+      `chat-images/${crypto.randomUUID()}-${image!.name}`,
     );
     await uploadBytes(chatImageRef, image!);
     const downloadUrl = await getDownloadURL(chatImageRef);
@@ -48,7 +48,7 @@ export default function AddImageForm({ chatId, closeModal }: Props) {
         chatId,
         message: downloadUrl,
         messageType: "IMAGE",
-        senderId: currentUser.uid,
+        senderId: currentUser.id,
         timestamp: serverTimestamp(),
       });
     }
@@ -57,7 +57,8 @@ export default function AddImageForm({ chatId, closeModal }: Props) {
 
   return (
     <div
-      className="absolute flex w-full z-20 top-0 left-0 h-full bg-black bg-opacity-60 items-center justify-center"
+      className="absolute left-0 top-0 z-20 flex h-full w-full items-center justify-center
+        bg-black bg-opacity-60"
       onClick={(e) => {
         if (e.target === containerRef.current) {
           closeModal();
@@ -66,7 +67,7 @@ export default function AddImageForm({ chatId, closeModal }: Props) {
       ref={containerRef}
     >
       <form
-        className="bg-white p-10 rounded-md w-[400px]"
+        className="w-[400px] rounded-md bg-white p-10"
         onSubmit={submitImage}
       >
         <input
@@ -82,18 +83,20 @@ export default function AddImageForm({ chatId, closeModal }: Props) {
             <img
               src={imageUrl}
               alt="Text Image Preview"
-              className="w-[400px] aspect-square object-cover rounded-md hover:scale-105 hover:cursor-pointer transition-all duration-100 ease"
+              className="ease aspect-square w-[400px] rounded-md object-cover transition-all duration-100
+                hover:scale-105 hover:cursor-pointer"
               onClick={() => fileRef.current?.click()}
             />
             <br />
-            <button type="submit" className="text-center w-full">
+            <button type="submit" className="w-full text-center">
               Send
             </button>
           </>
         ) : (
-          <div className="flex items-center flex-col gap-5">
+          <div className="flex flex-col items-center gap-5">
             <LuImagePlus
-              className="w-[100px] h-[100px] hover:scale-105 hover:cursor-pointer tranistion-all duration-100 ease"
+              className="tranistion-all ease h-[100px] w-[100px] duration-100 hover:scale-105
+                hover:cursor-pointer"
               onClick={() => fileRef.current?.click()}
             />
             <p>Upload an Image</p>

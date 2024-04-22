@@ -5,7 +5,10 @@ export default function SignInForm() {
     <form className="gap-y-10">
       <UnderlineInput label="Email" placeHolder="Enter your email..." />
       <UnderlineInput label="Password" placeHolder="Enter your password..." />
-      <button className="my-10 bg-dark-purple-highlight hover:bg-dark-purple-hover rounded-full w-full p-3 font-montserrat btn-glow">
+      <button
+        className="btn-glow my-10 w-full rounded-full bg-dark-purple-highlight p-3 font-montserrat
+          hover:bg-dark-purple-hover"
+      >
         Sign In
       </button>
     </form>

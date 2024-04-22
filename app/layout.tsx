@@ -30,8 +30,16 @@ export default function RootLayout({
       className={`${montserrat.variable} ${spaceGrotesk.variable}`}
     >
       <body>
-        <nav className="bg-dark-bg h-20 flex items-center justify-between px-14 fixed top-0 w-full shadow-sm">
-          <Link href={"/"} className="text-white text-xl font-medium font-montserrat">ArtCommission</Link>
+        <nav
+          className="fixed top-0 flex h-20 w-full items-center justify-between bg-dark-bg px-14
+            shadow-sm"
+        >
+          <Link
+            href={"/"}
+            className="font-montserrat text-xl font-medium text-white"
+          >
+            ArtCommission
+          </Link>
           <SearchBar />
           <div className="flex items-center gap-4">
             <LuInbox size={25} className="hover:cursor-pointer" />
@@ -41,7 +49,9 @@ export default function RootLayout({
             <ProfileImage />
           </div>
         </nav>
-        <div className="pt-20 h-full overflow-y-scroll bg-dark-bg">{children}</div>
+        <div className="h-full overflow-y-scroll bg-dark-bg pt-20">
+          {children}
+        </div>
       </body>
     </html>
   );

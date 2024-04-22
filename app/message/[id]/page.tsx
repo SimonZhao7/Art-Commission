@@ -66,7 +66,7 @@ export default function Chat({ params }: Props) {
         collection(db, "messages"),
         where("chatId", "==", params.id),
         orderBy("timestamp", "desc"),
-        limit(LIMIT)
+        limit(LIMIT),
       );
       const data = await getDocs(q);
       const msgs = await fillSenderData(data);
@@ -91,7 +91,7 @@ export default function Chat({ params }: Props) {
         where("chatId", "==", params.id),
         orderBy("timestamp", "desc"),
         limit(LIMIT),
-        startAfter(messages[0].timestamp)
+        startAfter(messages[0].timestamp),
       );
       const data = await getDocs(q);
       if (data.docs.length > 0) {
@@ -130,20 +130,20 @@ export default function Chat({ params }: Props) {
           ...d.data(),
           sender: { id: senderId, ...user.data() } as User,
         } as Message;
-      })
+      }),
     );
   };
 
   return (
-    <section className="flex-[2] flex flex-col">
+    <section className="flex flex-[2] flex-col">
       <div
-        className="flex-1 w-full p-10 pb-20 overflow-y-scroll"
+        className="w-full flex-1 overflow-y-scroll p-10 pb-20"
         onScroll={handleScrollEvent}
         ref={chatDiv}
       >
-        <div className="w-full flex justify-center">
+        <div className="flex w-full justify-center">
           {!hasNextPage && (
-            <h1 className="text-light-gray text-sm font-montserrat mb-10">
+            <h1 className="mb-10 font-montserrat text-sm text-light-gray">
               This is the beginnning of your conversation.
             </h1>
           )}
@@ -156,7 +156,7 @@ export default function Chat({ params }: Props) {
             <div
               key={msg.id}
               id={msg.id}
-              className={`flex mb-4 font-montserrat ${
+              className={`mb-4 flex font-montserrat ${
                 msg.sender.id === currentUser?.id && "flex-row-reverse"
               }`}
             >
@@ -170,14 +170,12 @@ export default function Chat({ params }: Props) {
               {msg.messageType == "TEXT" ? (
                 <div
                   key={msg.id}
-                  className={`bg-dark-blue rounded-[10px] py-3 px-5 inline-flex flex-wrap max-w-[50%] ${
-                    fromSelf && "bg-dark-purple-highlight float-right"
+                  className={`inline-flex max-w-[50%] flex-wrap rounded-[10px] bg-dark-blue px-5 py-3 ${
+                    fromSelf && "float-right bg-dark-purple-highlight"
                   }`}
                 >
                   <p
-                    className={`text-sm flex items-center  ${
-                      fromSelf ? "text-black" : "text-dark-gray"
-                    }`}
+                    className={`flex items-center text-sm ${fromSelf ? "text-black" : "text-dark-gray"}`}
                     style={{ wordBreak: "break-word" }}
                   >
                     {msg.message}
@@ -197,18 +195,19 @@ export default function Chat({ params }: Props) {
         )}
       </div>
       <div className="relative">
-        <div className="absolute w-full bottom-5 px-10">
+        <div className="absolute bottom-5 w-full px-10">
           {showScrollBottom && (
-            <div className="w-full flex justify-center mb-3">
+            <div className="mb-3 flex w-full justify-center">
               <div
-                className="bg-white shadow-md p-[2px] rounded-full hover:scale-110 cursor-pointer ease transition-all"
+                className="ease cursor-pointer rounded-full bg-white p-[2px] shadow-md transition-all
+                  hover:scale-110"
                 onClick={() => {
                   chatBottom.current?.scrollIntoView({
                     behavior: "smooth",
                   });
                 }}
               >
-                <BiChevronDown className="w-8 h-8" />
+                <BiChevronDown className="h-8 w-8" />
               </div>
             </div>
           )}

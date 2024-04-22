@@ -52,7 +52,7 @@ export default function SetupForm({ uid }: { uid: string }) {
     const { email, username, firstName, lastName, profileImage } = data;
     const storageRef = ref(
       storage,
-      `profile-images/${crypto.randomUUID()}-${profileImage!.name}`
+      `profile-images/${crypto.randomUUID()}-${profileImage!.name}`,
     );
 
     await uploadBytes(storageRef, profileImage!);
@@ -83,7 +83,7 @@ export default function SetupForm({ uid }: { uid: string }) {
 
   return (
     <form>
-      <section className="md:flex gap-5">
+      <section className="gap-5 md:flex">
         <div className="flex-1">
           <Input
             label="Username"
@@ -104,21 +104,23 @@ export default function SetupForm({ uid }: { uid: string }) {
         </div>
         <div className="flex flex-1 flex-col items-center justify-center py-3">
           <div
-            className="flex h-[125px] aspect-square bg-light-gray rounded-lg items-center justify-center hover:bg-med-gray hover:scale-105 hover:cursor-pointer transition-all ease-out"
+            className="flex aspect-square h-[125px] items-center justify-center rounded-lg
+              bg-light-gray transition-all ease-out hover:scale-105 hover:cursor-pointer
+              hover:bg-med-gray"
             onClick={() => fileRef.current?.click()}
           >
             {uploadedImage != null ? (
               <img
                 src={URL.createObjectURL(uploadedImage)}
                 alt="image preview"
-                className="aspect-square object-cover w-[125px]"
+                className="aspect-square w-[125px] object-cover"
               />
             ) : (
               <LuImagePlus size={50} />
             )}
           </div>
           {errors.profileImage && (
-            <div className="text-red-500 text-sm flex items-center gap-1 mt-2">
+            <div className="mt-2 flex items-center gap-1 text-sm text-red-500">
               <CgDanger />
               <span>{errors.profileImage?.message}</span>
             </div>
@@ -141,7 +143,7 @@ export default function SetupForm({ uid }: { uid: string }) {
           />
         </div>
       </section>
-      <section className="md:flex gap-5">
+      <section className="gap-5 md:flex">
         <div className="flex-1">
           <Input
             label="First Name"
@@ -161,7 +163,8 @@ export default function SetupForm({ uid }: { uid: string }) {
       </section>
       <button
         onClick={onSubmit}
-        className="text-center w-full bg-highlight hover:bg-highlight-hover hover:scale-[1.02] transition-all ease-out text-white py-3 rounded-md"
+        className="w-full rounded-md bg-highlight py-3 text-center text-white transition-all
+          ease-out hover:scale-[1.02] hover:bg-highlight-hover"
       >
         Submit
       </button>
