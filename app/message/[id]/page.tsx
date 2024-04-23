@@ -20,6 +20,8 @@ import ChatImage from "./ChatImage";
 import MessageForm from "./MessageForm";
 import AddImageForm from "./AddImageForm";
 import Spinner from "@/components/Spinner";
+// Pusher
+import Pusher from "pusher-js/with-encryption";
 // Hooks
 import { useModal } from "@/hooks/useModal";
 import { useAuth } from "@/hooks/useFirebaseUser";
@@ -27,6 +29,8 @@ import { useAuth } from "@/hooks/useFirebaseUser";
 import { BiChevronDown } from "react-icons/bi";
 // Types
 import { User } from "@/types/user";
+// Util
+import "dotenv/config";
 
 interface Props {
   params: {
@@ -59,6 +63,9 @@ export default function Chat({ params }: Props) {
   const chatBottom = useRef<HTMLDivElement | null>(null);
   const offFromBottom = useRef(0);
   const hasNextPage = messages.length % LIMIT === 0;
+  const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
+    cluster: "us3",
+  });
 
   useEffect(() => {
     const fetchNewMsgs = async () => {
@@ -73,6 +80,7 @@ export default function Chat({ params }: Props) {
       msgs.reverse();
       setMessages([...msgs]);
     };
+
     fetchNewMsgs();
   }, []);
 
@@ -81,6 +89,12 @@ export default function Chat({ params }: Props) {
       const scrollHeight = chatDiv.current.scrollHeight;
       chatDiv.current.scroll(0, scrollHeight - offFromBottom.current);
     }
+
+    const channel = pusher.subscribe(`messages-${params.id}`);
+    channel.bind("newMessage", (message: Message) => {
+      setMessages([...messages, message]);
+    });
+    return () => channel.unsubscribe();
   }, [messages]);
 
   const fetchNextPage = async () => {

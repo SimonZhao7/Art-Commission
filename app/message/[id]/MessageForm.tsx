@@ -1,8 +1,5 @@
 // React Form
 import { FormEventHandler, useState } from "react";
-// Firebase
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/firebase";
 // Hooks
 import { useAuth } from "@/hooks/useFirebaseUser";
 // Icons
@@ -21,12 +18,13 @@ export default function MessageForm({ id, openImageModal }: Props) {
   const sendMessage: FormEventHandler<HTMLFormElement> = async (e) => {
     e?.preventDefault();
     if (message.length > 0 && currentUser !== null) {
-      await addDoc(collection(db, "messages"), {
-        chatId: id,
-        message,
-        messageType: "TEXT",
-        senderId: currentUser.id,
-        timestamp: serverTimestamp(),
+      await fetch(`/api/message/${id}`, {
+        method: "POST",
+        body: JSON.stringify({
+          chatId: id,
+          senderId: currentUser.id,
+          message,
+        }),
       });
       setMessage("");
     }
