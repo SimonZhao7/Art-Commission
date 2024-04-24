@@ -12,7 +12,8 @@ import {
   limit,
   startAfter,
   DocumentData,
-  QuerySnapshot,
+  QueryDocumentSnapshot,
+  Query,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 // Components
@@ -52,6 +53,7 @@ const LIMIT = 10;
 export default function Chat({ params }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(false);
   const [showScrollBottom, setShowScrollBottom] = useState<boolean>(false);
   const {
     modalOpen: imageModalOpen,
@@ -62,7 +64,6 @@ export default function Chat({ params }: Props) {
   const chatDiv = useRef<HTMLDivElement | null>(null);
   const chatBottom = useRef<HTMLDivElement | null>(null);
   const offFromBottom = useRef(0);
-  const hasNextPage = messages.length % LIMIT === 0;
   const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY!, {
     cluster: "us3",
   });
@@ -73,12 +74,9 @@ export default function Chat({ params }: Props) {
         collection(db, "messages"),
         where("chatId", "==", params.id),
         orderBy("timestamp", "desc"),
-        limit(LIMIT),
+        limit(LIMIT + 1),
       );
-      const data = await getDocs(q);
-      const msgs = await fillSenderData(data);
-      msgs.reverse();
-      setMessages([...msgs]);
+      await fetchQuery(q);
     };
 
     fetchNewMsgs();
@@ -104,15 +102,10 @@ export default function Chat({ params }: Props) {
         collection(db, "messages"),
         where("chatId", "==", params.id),
         orderBy("timestamp", "desc"),
-        limit(LIMIT),
+        limit(LIMIT + 1),
         startAfter(messages[0].timestamp),
       );
-      const data = await getDocs(q);
-      if (data.docs.length > 0) {
-        const newMsgs = await fillSenderData(data);
-        newMsgs.reverse();
-        setMessages([...newMsgs, ...messages]);
-      }
+      await fetchQuery(q);
       setLoading(false);
     }, 500);
   };
@@ -134,9 +127,21 @@ export default function Chat({ params }: Props) {
     }
   };
 
-  const fillSenderData = (data: QuerySnapshot<DocumentData>) => {
+  const fetchQuery = async (q: Query<DocumentData>) => {
+    const data = await getDocs(q);
+    if (data.docs.length > 0) {
+      const length = data.docs.length;
+      const slicedDocs = data.docs.slice(0, Math.min(length, 10));
+      const newMsgs = await fillSenderData(slicedDocs);
+      newMsgs.reverse();
+      setMessages([...newMsgs, ...messages]);
+      setHasNextPage(length > LIMIT);
+    }
+  };
+
+  const fillSenderData = (docs: QueryDocumentSnapshot<DocumentData>[]) => {
     return Promise.all(
-      data.docs.map(async (d) => {
+      docs.map(async (d) => {
         const senderId = d.data().senderId;
         const user = await getDoc(doc(db, "users", senderId));
         return {
