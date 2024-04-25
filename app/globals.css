@@ -33,7 +33,7 @@
     }
 
     .carousel-btn {
-        @apply h-full hover:bg-light-gray transition-all duration-75 rounded-sm;
+        @apply h-full hover:bg-dark-gray hover:bg-opacity-20 transition-all duration-75 rounded-sm;
     }
 
     .underline-input {

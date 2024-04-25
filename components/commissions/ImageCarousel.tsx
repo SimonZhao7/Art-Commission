@@ -39,7 +39,7 @@ export default function ImageCarousel({
   useEffect(() => {
     const handleDragStart = (e: Event) => {};
 
-    const handleDragEnd = (e: Event) => {};
+    const handleDragEnd = () => {};
 
     for (let i = 0; i < items.length; i++) {
       items[i].addEventListener("dragstart", handleDragStart);
@@ -57,11 +57,14 @@ export default function ImageCarousel({
   };
 
   return (
-    <section className="my-20">
-      <div className={"flex w-full gap-2"} style={{ height: `${height}px` }}>
+    <section className="my-20 font-montserrat">
+      <div
+        className={"relative flex w-full gap-2 bg-dark-blue"}
+        style={{ height: `${height}px` }}
+      >
         <button
           type="button"
-          className="carousel-btn"
+          className="carousel-btn absolute left-0"
           onClick={() =>
             setIndex((prev) => {
               if (prev - 1 < 0) {
@@ -78,30 +81,26 @@ export default function ImageCarousel({
           <img
             src={images[index].url}
             alt={`Image at index ${index}`}
-            className="h-full w-full flex-1 rounded-md border-2 border-light-gray object-cover p-[1px]
-              shadow-sm"
+            className="h-full w-full flex-1 rounded-md object-cover p-[1px] shadow-sm"
           />
         ) : (
-          <div
-            className="flex flex-1 flex-col items-center justify-center gap-4 border-2
-              border-light-gray"
-          >
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 text-dark-gray">
             <LuImagePlus className="h-20 w-20" />
             <h1>Upload your sample photos!</h1>
           </div>
         )}
         <button
           type="button"
-          className="carousel-btn"
+          className="carousel-btn absolute right-0"
           onClick={() => setIndex((prev) => (prev + 1) % images.length)}
         >
           <BsChevronCompactRight className="h-10 w-10" />
         </button>
       </div>
-      <div className="mt-3 flex items-center justify-between px-12">
+      <div className="mt-6 flex items-center justify-between text-dark-gray">
         <button
           type="button"
-          className="flex items-center gap-2 rounded-md bg-light-gray px-5 py-2 text-sm"
+          className="flex items-center gap-2 rounded-md bg-dark-blue px-5 py-2 text-sm"
           onClick={() => fileRef.current?.click()}
         >
           <AiOutlinePlus className="h-4 w-4" /> Add
@@ -111,12 +110,12 @@ export default function ImageCarousel({
             return idx === index ? (
               <div
                 key={image.url}
-                className="h-4 w-4 cursor-pointer rounded-full bg-med-gray"
+                className="h-4 w-4 cursor-pointer rounded-full bg-dark-blue-highlight"
               ></div>
             ) : (
               <div
                 key={image.url}
-                className="h-3 w-3 cursor-pointer rounded-full border-[1px] border-med-gray"
+                className="h-3 w-3 cursor-pointer rounded-full bg-dark-blue transition-all hover:scale-110"
                 onClick={() => setIndex(idx)}
               ></div>
             );
@@ -124,7 +123,7 @@ export default function ImageCarousel({
         </div>
         <button
           type="button"
-          className="flex items-center gap-2 rounded-md bg-light-gray px-5 py-2 text-sm"
+          className="flex items-center gap-2 rounded-md bg-dark-blue px-5 py-2 text-sm"
           onClick={() => setEditOpen(true)}
         >
           <FiEdit className="h-4 w-4" /> Edit
