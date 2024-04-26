@@ -18,10 +18,12 @@ const wrapperVariant = {
       duration: 0.2,
       staggerChildren: 0.1,
       ease: "easeOut",
+      right: "0px",
     },
   },
   hidden: {
     opacity: 0,
+    right: "-300px", // Temporary Hide Becasue of Bug
   },
   exit: {
     transition: {

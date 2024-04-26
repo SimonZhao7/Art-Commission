@@ -7,10 +7,10 @@ import {
   SetStateAction,
 } from "react";
 // React Icons
-import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
-import { AiOutlinePlus } from "react-icons/ai";
-import { LuImagePlus } from "react-icons/lu";
 import { FiEdit } from "react-icons/fi";
+import { LuImagePlus } from "react-icons/lu";
+import { AiOutlinePlus } from "react-icons/ai";
+import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
 // Components
 import EditCarousel from "./EditCarousel";
 // Types
@@ -57,7 +57,7 @@ export default function ImageCarousel({
   };
 
   return (
-    <section className="my-20 font-montserrat">
+    <section className="font-montserrat">
       <div
         className={"relative flex w-full gap-2 bg-dark-blue"}
         style={{ height: `${height}px` }}
@@ -97,7 +97,7 @@ export default function ImageCarousel({
           <BsChevronCompactRight className="h-10 w-10" />
         </button>
       </div>
-      <div className="mt-6 flex items-center justify-between text-dark-gray">
+      <div className="mt-6 flex items-center justify-between">
         <button
           type="button"
           className="flex items-center gap-2 rounded-md bg-dark-blue px-5 py-2 text-sm"

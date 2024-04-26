@@ -31,7 +31,7 @@ export default function RootLayout({
     >
       <body>
         <nav
-          className="fixed top-0 flex h-20 w-full items-center justify-between bg-dark-bg px-14
+          className="fixed top-0 z-10 flex h-20 w-full items-center justify-between bg-dark-bg px-14
             shadow-sm"
         >
           <Link

@@ -1,58 +1,35 @@
-import { useState, useRef, useEffect } from "react";
 // React Hook Form
-import { useFormContext } from "react-hook-form";
-// React Icons
-import { FiEdit, FiCheck } from "react-icons/fi";
+import { useFormContext, useWatch } from "react-hook-form";
+// Components
+import Toggle from "../form/Toggle";
+// Types
+import { CreateCommissionFormFields } from "@/types/commission";
 
 const HeaderTitleInput = () => {
-  const { register, formState: errors } = useFormContext();
-  const [showTitleInput, setShowTitleInput] = useState(false);
-  const titleInput = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (e.target !== titleInput.current) {
-        setShowTitleInput(false);
-      }
-    };
-    window.addEventListener("click", handleClick);
-    return () => {
-      window.removeEventListener("click", handleClick);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (showTitleInput) {
-      titleInput.current?.focus();
-    }
-  }, [showTitleInput]);
+  const {
+    register,
+    control,
+    formState: errors,
+  } = useFormContext<CreateCommissionFormFields>();
+  const visible = useWatch({
+    control,
+    name: "visible",
+  });
 
   return (
     <div
-      className="flex w-full items-center justify-between border-[1px] border-slight-gray p-5
-        shadow-md"
+      className="flex w-full items-center justify-between bg-dark-blue-highlight p-5 px-14
+        font-montserrat shadow-md"
     >
       <input
         {...register("title")}
-        className="w-[300px] overflow-ellipsis outline-none disabled:bg-transparent"
-        disabled={!showTitleInput}
-        ref={titleInput}
-        defaultValue={"A New Commission"}
+        className="w-[300px] overflow-ellipsis bg-transparent text-xl font-semibold text-dark-gray
+          outline-none 2xl:text-2xl"
       />
-      {showTitleInput ? (
-        <FiCheck
-          className="h-5 w-5 cursor-pointer"
-          onClick={() => setShowTitleInput(false)}
-        />
-      ) : (
-        <FiEdit
-          className="h-5 w-5 cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowTitleInput(true);
-          }}
-        />
-      )}
+      <div className="flex items-center justify-between gap-8">
+        <label className="text-md text-white">Make Public</label>
+        <Toggle active={visible} register={register} />
+      </div>
     </div>
   );
 };

@@ -1,21 +1,23 @@
 import { ChangeEvent, useState } from "react";
 // React Hook Form
-import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, FormProvider } from "react-hook-form";
 // Schemas
 import CreateCommissionSchema from "@/lib/schemas/CreateCommissionSchema";
 // Components
-import ImageCarousel from "@/components/commissions/ImageCarousel";
-import Toggle from "@/components/form/Toggle";
-import PackageRow from "@/components/commissions/PackageRow";
-import CreatePackageModal from "./CreatePackageModal";
 import HeaderTitleInput from "./HeaderTitleInput";
+import UnderlineInput from "../form/UnderlineInput";
+import CreatePackageModal from "./CreatePackageModal";
+import PackageRow from "@/components/commissions/PackageRow";
+import ImageCarousel from "@/components/commissions/ImageCarousel";
 // Hooks
 import { useModal } from "@/hooks/useModal";
 // React Icons
-import { Image, CreateCommissionFormFields } from "@/types/commission";
+import { FaPlus } from "react-icons/fa6";
 // Framer Motion
 import { AnimatePresence } from "framer-motion";
+// Types
+import { Image, CreateCommissionFormFields } from "@/types/commission";
 
 const CreateCommissionForm = () => {
   const formMethods = useForm<CreateCommissionFormFields>({
@@ -28,14 +30,15 @@ const CreateCommissionForm = () => {
       packages: [],
     },
   });
-  const { register, watch } = formMethods;
-  const { description, visible } = watch();
+  const { watch, register, setValue, getValues } = formMethods;
+  const { title, description } = watch();
   const {
     modalOpen: createPackageModalOpen,
     openModal: openCreatePackageModal,
     closeModal: closeCreatePackageModal,
   } = useModal(false);
   const [images, setImages] = useState<Image[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
 
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files!;
@@ -48,36 +51,74 @@ const CreateCommissionForm = () => {
 
   return (
     <FormProvider {...formMethods}>
-      <form className="mx-auto max-w-xl pb-20 2xl:max-w-7xl">
+      <form className="mx-auto pb-20 text-dark-gray">
         <HeaderTitleInput />
-        <div className="flex w-full items-center justify-between p-4 shadow-sm">
-          <label className="text-md">Make Public</label>
-          <Toggle active={visible} register={register} />
-        </div>
-        <ImageCarousel
-          height={300}
-          handleFileUpload={handleFileUpload}
-          images={images}
-          setImages={setImages}
-        />
-        <div className="my-20">
-          <label>Description</label>
-          <textarea
-            value={description}
-            className="h-[250px] w-full resize-y rounded-sm border-[1px] border-light-gray p-5 text-sm
-              shadow-sm outline-none"
-          ></textarea>
-        </div>
-        {/* <div
-      dangerouslySetInnerHTML={{
-        __html: DOMPurify.sanitize(marked.parse(description)),
-      }}
-    ></div> */}
-        <div className="my-20">
-          <h2 className="mb-10 text-2xl">Commission Packages</h2>
-          <PackageRow openModal={openCreatePackageModal} />
-        </div>
-        <h2 className="text-2xl">Commission Add-ons</h2>
+        <section className="mt-10 flex w-full gap-10 px-14 font-montserrat">
+          <div className="flex-[3]">
+            <div className="flex items-center gap-5">
+              <UnderlineInput
+                label="Tags"
+                labelFontSize={16}
+                registerProps={register("tag")}
+              />
+              <button
+                className="rounded-full bg-dark-blue-highlight p-2 transition-transform duration-100
+                  ease-out hover:scale-105"
+                type="button"
+                onClick={() => {
+                  setTags([...tags, getValues("tag")]);
+                  setValue("tag", "");
+                }}
+              >
+                <FaPlus size={20} />
+              </button>
+            </div>
+            <label className="mb-3 block">Description</label>
+            <textarea
+              {...register("description")}
+              value={description}
+              className="h-[250px] w-full resize-none rounded-sm bg-dark-blue p-5 text-sm shadow-sm
+                outline-none"
+            ></textarea>
+            <div className="my-20">
+              <h2 className="mb-10 text-2xl font-semibold">
+                Commission Packages
+              </h2>
+              <PackageRow openModal={openCreatePackageModal} />
+            </div>
+            <h2 className="text-2xl font-semibold">Commission Add-ons</h2>
+          </div>
+          <div className="flex-[2]">
+            <h1 className="mb-5 text-2xl font-semibold 2xl:text-3xl">
+              {title || "A New Commission"}
+            </h1>
+            <ImageCarousel
+              height={300}
+              handleFileUpload={handleFileUpload}
+              images={images}
+              setImages={setImages}
+            />
+            <h1 className="my-5 text-2xl font-semibold 2xl:text-3xl">
+              Related Tags
+            </h1>
+            <section className="flex flex-wrap gap-3">
+              {tags.length > 0 ? (
+                tags.map((tag, i) => (
+                  <div
+                    onClick={() => setTags(tags.filter((_, idx) => idx != i))}
+                    className="cursor-pointer rounded-full bg-dark-yellow px-4 py-1 text-sm font-semibold
+                      text-black transition-transform duration-100 ease-out hover:scale-105
+                      2xl:text-md"
+                  >
+                    <p key={i}>{tag}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No related tags.</p>
+              )}
+            </section>
+          </div>
+        </section>
       </form>
       <AnimatePresence>
         {createPackageModalOpen && (
