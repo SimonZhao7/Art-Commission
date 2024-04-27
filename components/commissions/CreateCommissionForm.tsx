@@ -19,13 +19,18 @@ import { AnimatePresence } from "framer-motion";
 // Types
 import { Image, CreateCommissionFormFields } from "@/types/commission";
 
+import MarkdownPreview from "@uiw/react-markdown-preview";
+import rehypeSanitize from "rehype-sanitize";
+
+const headerStyles = "text-2xl font-semibold 2xl:text-3xl";
+
 const CreateCommissionForm = () => {
   const formMethods = useForm<CreateCommissionFormFields>({
     mode: "onBlur",
     resolver: zodResolver(CreateCommissionSchema),
     defaultValues: {
       title: "A New Commission",
-      description: "# This is your description section",
+      description: "",
       visible: true,
       packages: [],
     },
@@ -53,7 +58,7 @@ const CreateCommissionForm = () => {
     <FormProvider {...formMethods}>
       <form className="mx-auto pb-20 text-dark-gray">
         <HeaderTitleInput />
-        <section className="mt-10 flex w-full gap-10 px-14 font-montserrat">
+        <section className={"flex w-full gap-10 px-14 font-montserrat"}>
           <div className="flex-[3]">
             <div className="flex items-center gap-5">
               <UnderlineInput
@@ -77,19 +82,15 @@ const CreateCommissionForm = () => {
             <textarea
               {...register("description")}
               value={description}
+              placeholder="Enter a description with markdown..."
               className="h-[250px] w-full resize-none rounded-sm bg-dark-blue p-5 text-sm shadow-sm
                 outline-none"
             ></textarea>
-            <div className="my-20">
-              <h2 className="mb-10 text-2xl font-semibold">
-                Commission Packages
-              </h2>
-              <PackageRow openModal={openCreatePackageModal} />
-            </div>
-            <h2 className="text-2xl font-semibold">Commission Add-ons</h2>
+            <PackageRow openModal={openCreatePackageModal} />
+            <h2 className={`${headerStyles}`}>Commission Add-ons</h2>
           </div>
-          <div className="flex-[2]">
-            <h1 className="mb-5 text-2xl font-semibold 2xl:text-3xl">
+          <div className="flex-[2] flex-shrink-0">
+            <h1 className={`${headerStyles} my-8 mb-5`}>
               {title || "A New Commission"}
             </h1>
             <ImageCarousel
@@ -98,9 +99,7 @@ const CreateCommissionForm = () => {
               images={images}
               setImages={setImages}
             />
-            <h1 className="my-5 text-2xl font-semibold 2xl:text-3xl">
-              Related Tags
-            </h1>
+            <h1 className={`${headerStyles} my-5`}>Related Tags</h1>
             <section className="flex flex-wrap gap-3">
               {tags.length > 0 ? (
                 tags.map((tag, i) => (
@@ -117,6 +116,21 @@ const CreateCommissionForm = () => {
                 <p>No related tags.</p>
               )}
             </section>
+            <h1 className={`${headerStyles} my-5`}>About this Commission</h1>
+            {description ? (
+              <MarkdownPreview
+                style={{
+                  backgroundColor: "transparent",
+                  color: "#D7D7D7",
+                  fontFamily: "var(--montserrat), sans-serif",
+                  listStyle: "initial",
+                }}
+                source={description}
+                rehypePlugins={[rehypeSanitize]}
+              />
+            ) : (
+              <p>No information about this commission.</p>
+            )}
           </div>
         </section>
       </form>

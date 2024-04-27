@@ -2,6 +2,8 @@
 import { CreateCommissionFormFields } from "@/types/commission";
 // React Hook Form
 import { useFormContext, useWatch } from "react-hook-form";
+// Components
+import PackageCard from "@/components/PackageCard";
 // React Icons
 import { AiOutlinePlus } from "react-icons/ai";
 
@@ -9,44 +11,29 @@ interface Props {
   openModal: () => void;
 }
 
+const headerStyles = "text-2xl font-semibold 2xl:text-3xl";
+
 const PackageRow = ({ openModal }: Props) => {
   const { control } = useFormContext<CreateCommissionFormFields>();
   const packages = useWatch({ control, name: "packages" });
 
   return (
-    <div className="flex h-[350px] space-x-4 overflow-x-scroll">
-      <button
-        type="button"
-        onClick={openModal}
-        className="ease flex h-full w-[175px] flex-shrink-0 cursor-pointer items-center
-          justify-center rounded-lg bg-med-gray transition-colors hover:bg-light-gray"
-      >
-        <AiOutlinePlus size={60} />
-      </button>
-      {packages.map((p, i) => (
-        <div
-          key={i}
-          className="w-[400px] flex-shrink-0 rounded-lg bg-light-gray p-7"
+    <section className="my-20">
+      <h2 className={`${headerStyles} mb-10`}>Commission Packages</h2>
+      <div className="flex h-[425px] w-min space-x-4 overflow-x-scroll!">
+        {packages.map((p, i) => (
+          <PackageCard packageItem={p} key={i} />
+        ))}
+        <button
+          type="button"
+          onClick={openModal}
+          className="ease shaodw-white flex h-full w-[100px] flex-shrink-0 cursor-pointer
+            items-center justify-center rounded-lg bg-dark-blue-highlight transition-colors"
         >
-          <h2 className="mb-5 text-2xl">{p.title}</h2>
-          <p className="mb-2">{p.details}</p>
-          <div className="flex justify-between">
-            <p>Revisions:</p>
-            <p>{p.revisions}</p>
-          </div>
-          <div className="flex justify-between">
-            <p>Delivery Time:</p>
-            <p>
-              {p.deliveryTime} day{p.deliveryTime != 1 && "s"}
-            </p>
-          </div>
-          <div className="flex justify-between">
-            <p>Price:</p>
-            <p>${p.price.toFixed(2)}</p>
-          </div>
-        </div>
-      ))}
-    </div>
+          <AiOutlinePlus size={60} />
+        </button>
+      </div>
+    </section>
   );
 };
 
