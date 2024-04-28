@@ -42,7 +42,7 @@ const CreatePackageModal = ({ closeModal }: Props) => {
   const createPackage: SubmitHandler<Package> = (data, e) => {
     e?.preventDefault();
     const packages = getValues("packages");
-    setValue("packages", [...packages, data]);
+    setValue("packages", [data, ...packages]);
     closeModal();
   };
 

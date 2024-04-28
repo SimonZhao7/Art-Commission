@@ -58,8 +58,8 @@ const CreateCommissionForm = () => {
     <FormProvider {...formMethods}>
       <form className="mx-auto pb-20 text-dark-gray">
         <HeaderTitleInput />
-        <section className={"flex w-full gap-10 px-14 font-montserrat"}>
-          <div className="flex-[3]">
+        <section className={"flex w-screen gap-10 px-14 font-montserrat"}>
+          <div className="w-3/5">
             <div className="flex items-center gap-5">
               <UnderlineInput
                 label="Tags"
@@ -89,7 +89,7 @@ const CreateCommissionForm = () => {
             <PackageRow openModal={openCreatePackageModal} />
             <h2 className={`${headerStyles}`}>Commission Add-ons</h2>
           </div>
-          <div className="flex-[2] flex-shrink-0">
+          <div className="w-2/5">
             <h1 className={`${headerStyles} my-8 mb-5`}>
               {title || "A New Commission"}
             </h1>

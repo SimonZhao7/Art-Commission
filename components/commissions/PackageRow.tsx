@@ -18,12 +18,9 @@ const PackageRow = ({ openModal }: Props) => {
   const packages = useWatch({ control, name: "packages" });
 
   return (
-    <section className="my-20">
+    <section className="my-20 w-full">
       <h2 className={`${headerStyles} mb-10`}>Commission Packages</h2>
-      <div className="flex h-[425px] w-min space-x-4 overflow-x-scroll!">
-        {packages.map((p, i) => (
-          <PackageCard packageItem={p} key={i} />
-        ))}
+      <div className="flex h-[425px] space-x-4 overflow-x-scroll">
         <button
           type="button"
           onClick={openModal}
@@ -32,6 +29,9 @@ const PackageRow = ({ openModal }: Props) => {
         >
           <AiOutlinePlus size={60} />
         </button>
+        {packages.map((p, i) => (
+          <PackageCard packageItem={p} key={i} />
+        ))}
       </div>
     </section>
   );
