@@ -2,24 +2,35 @@ import { UnderlineInputComponent } from "./types";
 
 const UnderlineInput: UnderlineInputComponent = ({
   label,
-  placeHolder,
-  labelFontSize,
+  attr,
+  pre,
+  post,
   registerProps,
-  
+  labelStyles,
+  containerStyles,
+  inputStyles,
 }) => {
   return (
-    <div className="my-8 w-full border-[3px] border-transparent border-b-dark-purple-highlight">
+    <div
+      className={`my-8 w-full border-[3px] border-transparent border-b-dark-purple-highlight
+      ${containerStyles}`}
+    >
       <label
-        style={{ fontSize: `${labelFontSize ? labelFontSize : "18"}px` }}
-        className="block font-montserrat text-lg text-dark-gray"
+        className={`block font-montserrat text-lg text-dark-gray ${labelStyles}`}
       >
         {label}
       </label>
-      <input
-        className="w-full bg-transparent py-3 font-space-grotesk text-md text-white outline-none"
-        placeholder={placeHolder}
-        {...registerProps}
-      ></input>
+      <div className="flex items-end">
+        {pre && <span className="mr-2 py-3">{pre}</span>}
+        <input
+          className={`w-full bg-transparent py-3 font-space-grotesk text-md text-white outline-none
+          ${inputStyles}`}
+          type="text"
+          {...attr}
+          {...registerProps}
+        />
+        {post && <span className="ml-2 py-3">{post}</span>}
+      </div>
     </div>
   );
 };
