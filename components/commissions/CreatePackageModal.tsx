@@ -1,3 +1,4 @@
+import { useState, useRef, Dispatch, SetStateAction } from "react";
 // Icons
 import { IoClose } from "react-icons/io5";
 // Types
@@ -13,6 +14,7 @@ import UnderlineInput from "../form/UnderlineInput";
 
 interface Props {
   closeModal: () => void;
+  setPkgImgUrls: Dispatch<SetStateAction<string[]>>;
 }
 
 const modalVariant = {
@@ -24,12 +26,13 @@ const errorMsg = "text-sm text-red-500 mt-2";
 const inputLabelAdjustments = "text-md";
 const inputBoxAdjustments = "my-0 border-b-dark-blue-highlight";
 
-const CreatePackageModal = ({ closeModal }: Props) => {
+const CreatePackageModal = ({ closeModal, setPkgImgUrls }: Props) => {
   // Main form state methods
   const { setValue, getValues } = useFormContext<CreateCommissionFormFields>();
   const {
     register,
     handleSubmit,
+    setValue: setValuePackage,
     formState: { errors },
   } = useForm<Package>({
     resolver: zodResolver(CreatePackageSchema),
@@ -39,11 +42,14 @@ const CreatePackageModal = ({ closeModal }: Props) => {
       price: 0,
     },
   });
+  const [imageUrl, setImageUrl] = useState("");
+  const imageInput = useRef<HTMLInputElement>(null);
 
   const createPackage: SubmitHandler<Package> = (data, e) => {
     e?.preventDefault();
     const packages = getValues("packages");
     setValue("packages", [data, ...packages]);
+    setPkgImgUrls((prev) => [imageUrl, ...prev]);
     closeModal();
   };
 
@@ -88,7 +94,43 @@ const CreatePackageModal = ({ closeModal }: Props) => {
                 labelStyles={inputLabelAdjustments}
                 containerStyles={`${inputBoxAdjustments} flex-1`}
               />
-              <div className="flex-1"></div>
+              <div
+                className="h-full flex-1"
+                onClick={() => imageInput?.current?.click()}
+              >
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt="Selected commission package image"
+                    className="mx-auto h-[60px] object-contain"
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    className="mx-auto block h-[40px] w-3/5 cursor-pointer rounded-md bg-dark-blue-highlight
+                      text-md transition-transform duration-100 ease-out hover:scale-105"
+                  >
+                    Add Image
+                  </button>
+                )}
+
+                <input
+                  onChange={(e) => {
+                    if (e.target.files?.length) {
+                      const img = e.target.files[0];
+                      setValuePackage("image", img);
+                      if (imageUrl) {
+                        URL.revokeObjectURL(imageUrl);
+                      }
+                      setImageUrl(URL.createObjectURL(img));
+                    }
+                  }}
+                  ref={imageInput}
+                  type="file"
+                  accept=".png, .jpg, .jpeg"
+                  className="hidden"
+                />
+              </div>
             </div>
 
             {errors.deliveryTime && (

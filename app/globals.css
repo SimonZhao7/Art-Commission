@@ -39,4 +39,8 @@
     .underline-input {
         @apply border-b-med-gray border-b-2 flex items-center hover:border-gray-400 transition-all ease-out;
     }
+
+    .underline-input-container {
+        @apply my-8 w-full border-[3px] border-transparent border-b-dark-purple-highlight;
+    }
 }

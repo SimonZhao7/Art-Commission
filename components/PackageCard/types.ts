@@ -6,6 +6,7 @@ type Package = z.infer<typeof CreatePackageSchema>;
 
 type PackageCardProps = {
   packageItem: Package;
+  pkgImage: string;
 };
 
 export type PackageCardComponent = FunctionComponent<PackageCardProps>;

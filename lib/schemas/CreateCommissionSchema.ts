@@ -3,16 +3,26 @@ import { z } from "zod";
 export const CreatePackageSchema = z.object({
   title: z
     .string()
+    .trim()
     .min(1, "No title provided")
     .max(200, "Title may not exceed 200 characters"),
   revisions: z.coerce
-    .number()
+    .number({
+      invalid_type_error: "No number provided",
+    })
     .gte(0, "Can not have negative number of revisions"),
   details: z.string(),
-  price: z.coerce.number().gt(0, "Commission package can not be free"), // Infinity - price varies
+  price: z.coerce
+    .number({
+      invalid_type_error: "No number provided",
+    })
+    .gt(0, "Commission package can not be free"), // Infinity - price varies
   deliveryTime: z.coerce
-    .number()
+    .number({
+      invalid_type_error: "No number provided",
+    })
     .gt(0, "Commission package can not take 0 days"),
+  image: z.instanceof(File).optional(),
 });
 
 const CreateCommissionSchema = z.object({

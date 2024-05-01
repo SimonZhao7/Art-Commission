@@ -11,10 +11,7 @@ const UnderlineInput: UnderlineInputComponent = ({
   inputStyles,
 }) => {
   return (
-    <div
-      className={`my-8 w-full border-[3px] border-transparent border-b-dark-purple-highlight
-      ${containerStyles}`}
-    >
+    <div className={`underline-input-container ${containerStyles}`}>
       <label
         className={`block font-montserrat text-lg text-dark-gray ${labelStyles}`}
       >
