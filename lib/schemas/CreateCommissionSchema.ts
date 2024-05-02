@@ -22,7 +22,12 @@ export const CreatePackageSchema = z.object({
       invalid_type_error: "No number provided",
     })
     .gt(0, "Commission package can not take 0 days"),
-  image: z.instanceof(File).optional(),
+  image: z
+    .object({
+      file: z.instanceof(File),
+      url: z.string(),
+    })
+    .optional(),
 });
 
 const CreateCommissionSchema = z.object({

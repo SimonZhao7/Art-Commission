@@ -5,16 +5,25 @@ import { MdOutlineRestartAlt } from "react-icons/md";
 import { CiAlarmOn } from "react-icons/ci";
 
 const PackageCard: PackageCardComponent = ({
-  packageItem: { title, details, deliveryTime, revisions, price },
-  pkgImage,
+  packageItem: { title, details, deliveryTime, revisions, price, image },
 }) => {
   return (
-    <div className="flex w-[300px] flex-shrink-0 flex-col rounded-lg bg-dark-blue p-5">
-      <img
-        src={pkgImage}
-        alt={`package image of title ${title}`}
-        className="block h-[150px] w-full flex-shrink-0 rounded-md bg-dark-gray object-cover"
-      ></img>
+    <div
+      className="package-card-glow flex h-full w-[300px] flex-shrink-0 flex-col rounded-lg
+        bg-dark-blue p-5 transition-all duration-150 ease-in hover:scale-[1.02]
+        hover:cursor-pointer hover:shadow-white"
+    >
+      <div
+        className={`block h-[150px] w-full flex-shrink-0 rounded-md ${!image && "bg-dark-gray"}`}
+      >
+        {image && (
+          <img
+            className="h-full w-full object-cover"
+            src={image.url}
+            alt={`package image of title ${title}`}
+          ></img>
+        )}
+      </div>
       <h2 className="my-5 text-2xl font-semibold">{title}</h2>
       <p className="mb-3 line-clamp-3 w-full flex-1 text-ellipsis break-words">
         {details}

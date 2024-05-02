@@ -9,19 +9,18 @@ import { AiOutlinePlus } from "react-icons/ai";
 
 interface Props {
   openModal: () => void;
-  pkgImages: string[];
 }
 
 const headerStyles = "text-2xl font-semibold 2xl:text-3xl";
 
-const PackageRow = ({ openModal, pkgImages }: Props) => {
+const PackageRow = ({ openModal }: Props) => {
   const { control } = useFormContext<CreateCommissionFormFields>();
   const packages = useWatch({ control, name: "packages" });
 
   return (
     <section className="my-20 w-full">
       <h2 className={`${headerStyles} mb-10`}>Commission Packages</h2>
-      <div className="flex h-[425px] space-x-4 overflow-x-scroll">
+      <div className="box-content flex h-[425px] space-x-4 overflow-y-visible overflow-x-scroll py-10">
         <button
           type="button"
           onClick={openModal}
@@ -31,7 +30,7 @@ const PackageRow = ({ openModal, pkgImages }: Props) => {
           <AiOutlinePlus size={60} />
         </button>
         {packages.map((p, i) => (
-          <PackageCard packageItem={p} key={i} pkgImage={pkgImages[i]} />
+          <PackageCard packageItem={p} key={i} />
         ))}
       </div>
     </section>

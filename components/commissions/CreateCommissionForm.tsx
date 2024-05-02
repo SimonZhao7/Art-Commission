@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEventHandler, useState } from "react";
 // React Hook Form
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
@@ -43,10 +43,9 @@ const CreateCommissionForm = () => {
     closeModal: closeCreatePackageModal,
   } = useModal(false);
   const [images, setImages] = useState<Image[]>([]);
-  const [pkgImgUrls, setPkgImgUrls] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
 
-  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
     const fileList = e.target.files!;
     if (fileList.length > 0 && images.length < 5) {
       const newFile = fileList[0];
@@ -87,7 +86,9 @@ const CreateCommissionForm = () => {
               className="h-[250px] w-full resize-none rounded-sm bg-dark-blue p-5 text-sm shadow-sm
                 outline-none"
             ></textarea>
-            <PackageRow openModal={openCreatePackageModal} pkgImages={pkgImgUrls} />
+            <PackageRow
+              openModal={openCreatePackageModal}
+            />
             <h2 className={`${headerStyles}`}>Commission Add-ons</h2>
           </div>
           <div className="w-2/5">
@@ -137,10 +138,7 @@ const CreateCommissionForm = () => {
       </form>
       <AnimatePresence>
         {createPackageModalOpen && (
-          <CreatePackageModal
-            closeModal={closeCreatePackageModal}
-            setPkgImgUrls={setPkgImgUrls}
-          />
+          <CreatePackageModal closeModal={closeCreatePackageModal} />
         )}
       </AnimatePresence>
     </FormProvider>

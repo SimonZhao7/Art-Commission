@@ -1,4 +1,4 @@
-import { useState, useRef, Dispatch, SetStateAction } from "react";
+import { useState, useRef, ChangeEventHandler } from "react";
 // Icons
 import { IoClose } from "react-icons/io5";
 // Types
@@ -14,7 +14,6 @@ import UnderlineInput from "../form/UnderlineInput";
 
 interface Props {
   closeModal: () => void;
-  setPkgImgUrls: Dispatch<SetStateAction<string[]>>;
 }
 
 const modalVariant = {
@@ -26,7 +25,7 @@ const errorMsg = "text-sm text-red-500 mt-2";
 const inputLabelAdjustments = "text-md";
 const inputBoxAdjustments = "my-0 border-b-dark-blue-highlight";
 
-const CreatePackageModal = ({ closeModal, setPkgImgUrls }: Props) => {
+const CreatePackageModal = ({ closeModal }: Props) => {
   // Main form state methods
   const { setValue, getValues } = useFormContext<CreateCommissionFormFields>();
   const {
@@ -42,6 +41,7 @@ const CreatePackageModal = ({ closeModal, setPkgImgUrls }: Props) => {
       price: 0,
     },
   });
+
   const [imageUrl, setImageUrl] = useState("");
   const imageInput = useRef<HTMLInputElement>(null);
 
@@ -49,8 +49,22 @@ const CreatePackageModal = ({ closeModal, setPkgImgUrls }: Props) => {
     e?.preventDefault();
     const packages = getValues("packages");
     setValue("packages", [data, ...packages]);
-    setPkgImgUrls((prev) => [imageUrl, ...prev]);
     closeModal();
+  };
+
+  const handleFileUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (e.target.files?.length) {
+      const file = e.target.files[0];
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl);
+      }
+      const url = URL.createObjectURL(file);
+      setImageUrl(url);
+      setValuePackage("image", {
+        file,
+        url,
+      });
+    }
   };
 
   return (
@@ -102,7 +116,8 @@ const CreatePackageModal = ({ closeModal, setPkgImgUrls }: Props) => {
                   <img
                     src={imageUrl}
                     alt="Selected commission package image"
-                    className="mx-auto h-[60px] object-contain"
+                    className="ease-outbackdrop: mx-auto block h-[60px] object-contain transition-transform
+                      duration-100 hover:scale-110 hover:cursor-pointer"
                   />
                 ) : (
                   <button
@@ -115,16 +130,7 @@ const CreatePackageModal = ({ closeModal, setPkgImgUrls }: Props) => {
                 )}
 
                 <input
-                  onChange={(e) => {
-                    if (e.target.files?.length) {
-                      const img = e.target.files[0];
-                      setValuePackage("image", img);
-                      if (imageUrl) {
-                        URL.revokeObjectURL(imageUrl);
-                      }
-                      setImageUrl(URL.createObjectURL(img));
-                    }
-                  }}
+                  onChange={handleFileUpload}
                   ref={imageInput}
                   type="file"
                   accept=".png, .jpg, .jpeg"
