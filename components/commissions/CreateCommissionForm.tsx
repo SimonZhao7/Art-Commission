@@ -86,9 +86,7 @@ const CreateCommissionForm = () => {
               className="h-[250px] w-full resize-none rounded-sm bg-dark-blue p-5 text-sm shadow-sm
                 outline-none"
             ></textarea>
-            <PackageRow
-              openModal={openCreatePackageModal}
-            />
+            <PackageRow openModal={openCreatePackageModal} />
             <h2 className={`${headerStyles}`}>Commission Add-ons</h2>
           </div>
           <div className="w-2/5">

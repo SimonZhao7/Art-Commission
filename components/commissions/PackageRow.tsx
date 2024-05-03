@@ -29,8 +29,8 @@ const PackageRow = ({ openModal }: Props) => {
         >
           <AiOutlinePlus size={60} />
         </button>
-        {packages.map((p, i) => (
-          <PackageCard packageItem={p} key={i} />
+        {packages!.map((p, i) => (
+          <PackageCard packageItem={p} idx={i} key={i} />
         ))}
       </div>
     </section>
