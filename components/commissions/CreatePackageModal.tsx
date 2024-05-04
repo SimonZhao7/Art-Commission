@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEventHandler } from "react";
+import { useRef, ChangeEventHandler } from "react";
 // Icons
 import { IoClose } from "react-icons/io5";
 // Types
@@ -7,13 +7,19 @@ import { CreateCommissionFormFields, Package } from "@/types/commission";
 import { CreatePackageSchema } from "@/lib/schemas/CreateCommissionSchema";
 // React Hook Form
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler, useFormContext } from "react-hook-form";
+import {
+  useForm,
+  SubmitHandler,
+  useFormContext,
+  useWatch,
+} from "react-hook-form";
 import { motion } from "framer-motion";
 // Components
 import UnderlineInput from "../form/UnderlineInput";
 
 interface Props {
   closeModal: () => void;
+  editIdx: number;
 }
 
 const modalVariant = {
@@ -25,41 +31,60 @@ const errorMsg = "text-sm text-red-500 mt-2";
 const inputLabelAdjustments = "text-md";
 const inputBoxAdjustments = "my-0 border-b-dark-blue-highlight";
 
-const CreatePackageModal = ({ closeModal }: Props) => {
+const CreatePackageModal = ({ closeModal, editIdx }: Props) => {
   // Main form state methods
-  const { setValue, getValues } = useFormContext<CreateCommissionFormFields>();
+  const { control, setValue } = useFormContext<CreateCommissionFormFields>();
+  const packages = useWatch({ control, name: "packages" });
   const {
     register,
     handleSubmit,
+    watch,
     setValue: setValuePackage,
     formState: { errors },
   } = useForm<Package>({
     resolver: zodResolver(CreatePackageSchema),
     mode: "onBlur",
-    defaultValues: {
-      revisions: 0,
-      price: 0,
-    },
+    defaultValues:
+      editIdx < 0
+        ? {
+            revisions: 0,
+          }
+        : {
+            title: packages[editIdx].title,
+            revisions: packages[editIdx].revisions,
+            details: packages[editIdx].details,
+            price: packages[editIdx].price,
+            deliveryTime: packages[editIdx].deliveryTime,
+            image: packages[editIdx].image,
+          },
   });
-
-  const [imageUrl, setImageUrl] = useState("");
   const imageInput = useRef<HTMLInputElement>(null);
+  const image = watch("image");
 
-  const createPackage: SubmitHandler<Package> = (data, e) => {
+  const handleFormSubmit: SubmitHandler<Package> = (data, e) => {
     e?.preventDefault();
-    const packages = getValues("packages");
-    setValue("packages", [data, ...packages!]);
+    // Editing Mode
+    if (editIdx < 0) {
+      setValue("packages", [data, ...packages!]);
+    } else {
+      setValue(
+        "packages",
+        packages.map((pkg, i) => {
+          if (i !== editIdx) return pkg;
+          return data;
+        }),
+      );
+    }
     closeModal();
   };
 
   const handleFileUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
     if (e.target.files?.length) {
       const file = e.target.files[0];
-      if (imageUrl) {
-        URL.revokeObjectURL(imageUrl);
+      if (image) {
+        URL.revokeObjectURL(image.url);
       }
       const url = URL.createObjectURL(file);
-      setImageUrl(url);
       setValuePackage("image", {
         file,
         url,
@@ -77,12 +102,14 @@ const CreatePackageModal = ({ closeModal }: Props) => {
       className="absolute left-0 top-0 z-20 flex min-h-screen w-screen flex-col overflow-y-scroll
         bg-dark-bg font-montserrat text-dark-gray"
     >
-      <h1 className={"font-xl p-5 pl-10 text-3xl"}>Add a package</h1>
+      <h1 className={"font-xl p-5 pl-10 text-3xl"}>
+        {editIdx < 0 ? "Add a package" : "Edit package"}
+      </h1>
       <button className="absolute right-0 top-0 p-5" onClick={closeModal}>
         <IoClose size={50} />
       </button>
       <form
-        onSubmit={handleSubmit(createPackage)}
+        onSubmit={handleSubmit(handleFormSubmit)}
         className="flex w-full flex-1 flex-col items-center justify-center"
       >
         <div className="w-[700px]">
@@ -104,6 +131,7 @@ const CreatePackageModal = ({ closeModal }: Props) => {
                 post="days"
                 attr={{
                   type: "number",
+                  placeholder: "0",
                 }}
                 labelStyles={inputLabelAdjustments}
                 containerStyles={`${inputBoxAdjustments} flex-1`}
@@ -112,9 +140,9 @@ const CreatePackageModal = ({ closeModal }: Props) => {
                 className="h-full flex-1"
                 onClick={() => imageInput?.current?.click()}
               >
-                {imageUrl ? (
+                {image ? (
                   <img
-                    src={imageUrl}
+                    src={image.url}
                     alt="Selected commission package image"
                     className="ease-outbackdrop: mx-auto block h-[60px] object-contain transition-transform
                       duration-100 hover:scale-110 hover:cursor-pointer"
@@ -123,7 +151,7 @@ const CreatePackageModal = ({ closeModal }: Props) => {
                   <button
                     type="button"
                     className="mx-auto block h-[40px] w-3/5 cursor-pointer rounded-md bg-dark-blue-highlight
-                      text-md transition-transform duration-100 ease-out hover:scale-105"
+                      text-md outline-none transition-transform duration-100 ease-out hover:scale-105"
                   >
                     Add Image
                   </button>
@@ -188,7 +216,7 @@ const CreatePackageModal = ({ closeModal }: Props) => {
             className="rounded-m h-12 w-full bg-dark-purple-highlight py-2 text-black
               hover:bg-dark-purple-hover"
           >
-            Add package
+            {editIdx < 0 ? "Add package" : "Modify package"}
           </button>
         </div>
       </form>

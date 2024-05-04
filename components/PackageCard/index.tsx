@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 // Types
 import { PackageCardComponent, Pos } from "./types";
 import { CreateCommissionFormFields } from "@/types/commission";
@@ -8,6 +8,8 @@ import { useModal } from "@/hooks/useModal";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { BsFillTrash3Fill } from "react-icons/bs";
 import { MdEdit, MdOutlineRestartAlt } from "react-icons/md";
+// Context
+import { CreateCommissionContext } from "../commissions/CreateCommissionContext";
 // React Hook Form
 import { useFormContext } from "react-hook-form";
 
@@ -23,6 +25,7 @@ const PackageCard: PackageCardComponent = ({
   const [modalPos, setModalPos] = useState<Pos>({ top: 0, left: 0 });
   const optionsBtn = useRef<HTMLButtonElement>(null);
   const modal = useRef<HTMLDivElement>(null);
+  const ctx = useContext(CreateCommissionContext);
 
   const updatePosition = () => {
     if (!optionsBtn.current) {
@@ -34,6 +37,11 @@ const PackageCard: PackageCardComponent = ({
       top: top + 30,
       left,
     });
+  };
+
+  const handleDelete = () => {
+    const resultingPkgs = getValues("packages")!.filter((_, i) => i !== idx);
+    setValue("packages", resultingPkgs);
   };
 
   useEffect(() => {
@@ -118,19 +126,18 @@ const PackageCard: PackageCardComponent = ({
             left: `${modalPos.left}px`,
           }}
         >
-          <button type="button" className={`${modalBtnStyle}`}>
+          <button
+            type="button"
+            className={`${modalBtnStyle}`}
+            onClick={() => ctx.setEditIdx(idx)}
+          >
             <MdEdit />
             Edit
           </button>
           <button
             type="button"
             className={`${modalBtnStyle} text-red-500`}
-            onClick={() => {
-              const resultingPkgs = getValues("packages")!.filter(
-                (_, i) => i !== idx,
-              );
-              setValue("packages", resultingPkgs);
-            }}
+            onClick={handleDelete}
           >
             <BsFillTrash3Fill />
             Delete

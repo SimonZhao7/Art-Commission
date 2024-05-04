@@ -41,7 +41,7 @@ const CreateCommissionSchema = z.object({
   tag: z.string(),
   description: z.string(),
   visible: z.boolean(),
-  packages: z.array(CreatePackageSchema).optional(),
+  packages: z.array(CreatePackageSchema),
 });
 
 export default CreateCommissionSchema;
