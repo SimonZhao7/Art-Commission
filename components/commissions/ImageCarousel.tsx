@@ -47,6 +47,15 @@ export default function ImageCarousel({
     }
   }, []);
 
+  useEffect(() => {
+    if (images.length > 0) {
+      const intervalId = setInterval(() => {
+        setIndex((index + 1) % images.length);
+      }, 5000);
+      return () => clearInterval(intervalId);
+    }
+  }, [index]);
+
   const closeModal = () => setEditOpen(false);
 
   const removeImage = (idx: number) => {
@@ -59,36 +68,38 @@ export default function ImageCarousel({
   return (
     <section className="font-montserrat">
       <div
-        className={"relative flex w-full gap-2 bg-dark-blue"}
+        className={"relative flex w-full gap-2 overflow-hidden bg-dark-blue"}
         style={{ height: `${height}px` }}
       >
-        <button
-          type="button"
-          className="carousel-btn absolute left-0"
-          onClick={() =>
-            setIndex((prev) => {
-              if (prev - 1 < 0) {
-                return images.length - 1;
-              } else {
-                return prev - 1;
-              }
-            })
-          }
-        >
-          <BsChevronCompactLeft className="h-10 w-10" />
-        </button>
         {images.length > 0 ? (
-          <img
-            src={images[index].url}
-            alt={`Image at index ${index}`}
-            className="h-full w-full flex-1 rounded-md object-cover p-[1px] shadow-sm"
-          />
+          <div
+            className="flex flex-1 transition-transform duration-150"
+            style={{ transform: `translateX(${-index * 100}%)` }}
+          >
+            {images.map((img, i) => (
+              <img
+                src={img.url}
+                key={img.url}
+                alt={`Image at index ${i}`}
+                className="h-full w-full flex-shrink-0 rounded-md object-cover p-[1px] shadow-sm"
+              />
+            ))}
+          </div>
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-dark-gray">
             <LuImagePlus className="h-20 w-20" />
             <h1>Upload your sample photos!</h1>
           </div>
         )}
+        <button
+          type="button"
+          className="carousel-btn absolute left-0"
+          onClick={() =>
+            setIndex((prev) => (prev - 1 + images.length) % images.length)
+          }
+        >
+          <BsChevronCompactLeft className="h-10 w-10" />
+        </button>
         <button
           type="button"
           className="carousel-btn absolute right-0"
