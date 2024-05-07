@@ -47,4 +47,12 @@
     .underline-input-container {
         @apply my-8 w-full border-[3px] border-transparent border-b-dark-purple-highlight;
     }
+
+    .commission-header {
+        @apply text-2xl font-semibold 2xl:text-3xl;
+    }
+
+    .commission-round-btn {
+        @apply rounded-full bg-dark-blue-highlight p-2 transition-transform duration-100 ease-out hover:scale-105;
+    }
 }

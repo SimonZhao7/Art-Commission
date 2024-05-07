@@ -1,13 +1,11 @@
-import {
-  ChangeEventHandler,
-  useState,
-} from "react";
+import { ChangeEventHandler, useState } from "react";
 // React Hook Form
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider } from "react-hook-form";
 // Schemas
 import CreateCommissionSchema from "@/lib/schemas/CreateCommissionSchema";
 // Components
+import AddOnForm from "../AddOnForm";
 import HeaderTitleInput from "./HeaderTitleInput";
 import UnderlineInput from "../form/UnderlineInput";
 import CreatePackageModal from "./CreatePackageModal";
@@ -25,9 +23,7 @@ import rehypeSanitize from "rehype-sanitize";
 // Context
 import { CreateCommissionContext } from "./CreateCommissionContext";
 // Types
-import { Image, CreateCommissionFormFields } from "@/types/commission";
-
-const headerStyles = "text-2xl font-semibold 2xl:text-3xl";
+import { Image, CreateCommissionFormFields, AddOn } from "@/types/commission";
 
 const CreateCommissionForm = () => {
   const formMethods = useForm<CreateCommissionFormFields>({
@@ -49,6 +45,7 @@ const CreateCommissionForm = () => {
   } = useModal(false);
   const [images, setImages] = useState<Image[]>([]);
   const [tags, setTags] = useState<string[]>([]);
+  const [addOns, setAddOns] = useState<AddOn[]>([]);
   const [editIdx, setEditIdx] = useState(-1);
 
   const handleFileUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -83,8 +80,7 @@ const CreateCommissionForm = () => {
                   registerProps={register("tag")}
                 />
                 <button
-                  className="rounded-full bg-dark-blue-highlight p-2 transition-transform duration-100
-                    ease-out hover:scale-105"
+                  className={"commission-round-btn"}
                   type="button"
                   onClick={() => {
                     setTags([...tags, getValues("tag")]);
@@ -103,10 +99,10 @@ const CreateCommissionForm = () => {
                   outline-none"
               ></textarea>
               <PackageRow />
-              <h2 className={`${headerStyles}`}>Commission Add-ons</h2>
+              <AddOnForm addOns={addOns} setAddOns={setAddOns} />
             </div>
             <div className="w-2/5">
-              <h1 className={`${headerStyles} my-8 mb-5`}>
+              <h1 className={"commission-header my-8 mb-5"}>
                 {title || "A New Commission"}
               </h1>
               <ImageCarousel
@@ -115,7 +111,7 @@ const CreateCommissionForm = () => {
                 images={images}
                 setImages={setImages}
               />
-              <h1 className={`${headerStyles} my-5`}>Related Tags</h1>
+              <h1 className={"commission-header my-5"}>Related Tags</h1>
               <section className="flex flex-wrap gap-3">
                 {tags.length > 0 ? (
                   tags.map((tag, i) => (
@@ -132,7 +128,9 @@ const CreateCommissionForm = () => {
                   <p>No related tags.</p>
                 )}
               </section>
-              <h1 className={`${headerStyles} my-5`}>About this Commission</h1>
+              <h1 className={"commission-header my-5"}>
+                About this Commission
+              </h1>
               {description ? (
                 <MarkdownPreview
                   style={{
