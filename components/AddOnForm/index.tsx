@@ -27,9 +27,6 @@ const AddOnForm: AddOnComponent = ({ addOns, setAddOns }) => {
     <section>
       <div className="flex items-center justify-between">
         <h2 className={"commission-header"}>Commission Add-ons</h2>
-        <button className={"commission-round-btn"} type="button">
-          <FaPlus size={20} />
-        </button>
       </div>
       {addOns.map((addon, i) => (
         <div key={i} className="my-5 rounded-md bg-dark-blue p-5">
@@ -50,6 +47,7 @@ const AddOnForm: AddOnComponent = ({ addOns, setAddOns }) => {
           containerStyles="flex-[3]"
           labelStyles="text-md"
           registerProps={register("name")}
+          attr={{ placeholder: "Enter a name..." }}
         />
         <UnderlineInput
           containerStyles="flex-1"
@@ -57,6 +55,7 @@ const AddOnForm: AddOnComponent = ({ addOns, setAddOns }) => {
           labelStyles="text-md"
           pre="$"
           registerProps={register("price")}
+          attr={{ placeholder: "0.00" }}
         />
       </div>
       <textarea
@@ -69,7 +68,7 @@ const AddOnForm: AddOnComponent = ({ addOns, setAddOns }) => {
         className="my-3 w-full rounded-md bg-dark-blue-highlight py-3 transition-colors
           duration-100 ease-out hover:bg-[#444b66]"
       >
-        Add Package
+        Add Add-on
       </button>
     </section>
   );

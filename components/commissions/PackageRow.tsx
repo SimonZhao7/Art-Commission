@@ -9,6 +9,8 @@ import PackageCard from "@/components/PackageCard";
 import { CreateCommissionContext } from "./CreateCommissionContext";
 // React Icons
 import { AiOutlinePlus } from "react-icons/ai";
+// Framer Motion
+import { AnimatePresence } from "framer-motion";
 
 const headerStyles = "text-2xl font-semibold 2xl:text-3xl";
 
@@ -29,9 +31,11 @@ const PackageRow = () => {
         >
           <AiOutlinePlus size={60} />
         </button>
-        {packages!.map((p, i) => (
-          <PackageCard packageItem={p} idx={i} key={i} />
-        ))}
+        <AnimatePresence>
+          {packages!.map((p, i) => (
+            <PackageCard packageItem={p} idx={i} key={p.title} />
+          ))}
+        </AnimatePresence>
       </div>
     </section>
   );

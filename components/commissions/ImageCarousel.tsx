@@ -73,7 +73,7 @@ export default function ImageCarousel({
       >
         {images.length > 0 ? (
           <div
-            className="flex flex-1 transition-transform duration-150"
+            className="flex flex-1 transition-transform duration-200"
             style={{ transform: `translateX(${-index * 100}%)` }}
           >
             {images.map((img, i) => (
