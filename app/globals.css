@@ -25,6 +25,10 @@
     .package-card-glow:hover {
         box-shadow: 0 5px 40px 0 rgba(89, 98, 132, 0.3);
     }
+
+    .error-msg {
+        @apply text-sm text-red-500 mt-2;
+    }
 }
 
 @layer components {

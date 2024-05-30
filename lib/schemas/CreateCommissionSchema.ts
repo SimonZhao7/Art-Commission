@@ -49,17 +49,19 @@ export const AddOnSchema = z.object({
     .string()
     .min(1, "No add-on name provided")
     .max(100, "Name may not exceed 100 characters"),
-  price: z.coerce.number().transform((val, ctx) => {
-    const value = +val.toFixed(2);
-    if (value < 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Price may not be negative",
-      });
-      return z.NEVER;
-    }
-    return value;
-  }),
+  price: z.coerce
+    .number({ invalid_type_error: "Invalid price value" })
+    .transform((val, ctx) => {
+      const value = +val.toFixed(2);
+      if (value < 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Invalid price value",
+        });
+        return z.NEVER;
+      }
+      return value;
+    }),
   description: z.string(),
 });
 

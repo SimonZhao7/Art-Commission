@@ -27,7 +27,6 @@ const modalVariant = {
   closed: { opacity: 0, y: "100vh" },
 };
 
-const errorMsg = "text-sm text-red-500 mt-2";
 const inputLabelAdjustments = "text-md";
 const inputBoxAdjustments = "my-0 border-b-dark-blue-highlight";
 
@@ -121,7 +120,9 @@ const CreatePackageModal = ({ closeModal, editIdx }: Props) => {
               labelStyles={inputLabelAdjustments}
               containerStyles={inputBoxAdjustments}
             />
-            {errors.title && <p className={errorMsg}>{errors.title.message}</p>}
+            {errors.title && (
+              <p className={"error-msg"}>{errors.title.message}</p>
+            )}
           </div>
           <div className="mb-4">
             <div className="flex items-center gap-4">
@@ -168,7 +169,7 @@ const CreatePackageModal = ({ closeModal, editIdx }: Props) => {
             </div>
 
             {errors.deliveryTime && (
-              <p className={errorMsg}>{errors.deliveryTime.message}</p>
+              <p className={"error-msg"}>{errors.deliveryTime.message}</p>
             )}
           </div>
 
@@ -186,7 +187,7 @@ const CreatePackageModal = ({ closeModal, editIdx }: Props) => {
                 containerStyles={inputBoxAdjustments}
               />
               {errors.revisions && (
-                <p className={errorMsg}>{errors.revisions.message}</p>
+                <p className={"error-msg"}>{errors.revisions.message}</p>
               )}
             </div>
             <div className="flex-1">
@@ -201,7 +202,7 @@ const CreatePackageModal = ({ closeModal, editIdx }: Props) => {
                 />
               </div>
               {errors.price && (
-                <p className={errorMsg}>{errors.price.message}</p>
+                <p className={"error-msg"}>{errors.price.message}</p>
               )}
             </div>
           </div>
