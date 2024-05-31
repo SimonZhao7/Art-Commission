@@ -15,6 +15,7 @@ import { BsChevronCompactLeft, BsChevronCompactRight } from "react-icons/bs";
 import EditCarousel from "./EditCarousel";
 // Types
 import { Image } from "@/types/commission";
+import { AnimatePresence } from "framer-motion";
 
 interface Props {
   images: Image[];
@@ -147,13 +148,17 @@ export default function ImageCarousel({
         accept=".jpg,.png"
         onChange={handleFileUpload}
       />
-      {editOpen && (
-        <EditCarousel
-          images={images}
-          closeModal={closeModal}
-          removeImage={removeImage}
-        />
-      )}
+      <AnimatePresence>
+        {editOpen && (
+          <EditCarousel
+            key="editCarousel"
+            images={images}
+            setImages={setImages}
+            closeModal={closeModal}
+            removeImage={removeImage}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }

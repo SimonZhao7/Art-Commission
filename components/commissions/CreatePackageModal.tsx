@@ -101,12 +101,14 @@ const CreatePackageModal = ({ closeModal, editIdx }: Props) => {
       className="absolute left-0 top-0 z-20 flex min-h-screen w-screen flex-col overflow-y-scroll
         bg-dark-bg font-montserrat text-dark-gray"
     >
-      <h1 className={"font-xl p-5 pl-10 text-3xl"}>
-        {editIdx < 0 ? "Add a package" : "Edit package"}
-      </h1>
-      <button className="absolute right-0 top-0 p-5" onClick={closeModal}>
-        <IoClose size={50} />
-      </button>
+      <div className="flex items-center justify-between p-5 pl-10">
+        <h1 className={"font-xl text-3xl"}>
+          {editIdx < 0 ? "Add a package" : "Edit package"}
+        </h1>
+        <button onClick={closeModal}>
+          <IoClose size={50} />
+        </button>
+      </div>
       <form
         onSubmit={handleSubmit(handleFormSubmit)}
         className="flex w-full flex-1 flex-col items-center justify-center"
