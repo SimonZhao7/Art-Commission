@@ -26,10 +26,37 @@ const EditCarousel = ({
 }: Props) => {
   const handleDragOver: DragEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
+
+    const imagesCopy = [...images];
+    const draggedImageURL = document
+      .querySelector(".dragging")
+      ?.getAttribute("key");
+    const imgElements = Array.from(
+      document.querySelectorAll(".edit-item:not(.dragging)"),
+    );
+    const x = e.clientX;
+    const y = e.clientY;
+
+    // i is the index where item is insertedBefore
+    for (let i = 0; i < imgElements.length; i++) {
+      const imgElement = imgElements[i];
+      const { bottom, left, width } = imgElement.getBoundingClientRect();
+
+      if (y < bottom && x < left + width / 2) {
+        const removedImage = imagesCopy.splice(idx, 1)[0];
+        imagesCopy.splice(i, 0, removedImage);
+        setImages(imagesCopy);
+        return;
+      }
+    }
+  };
+
+  const handleDragStart: DragEventHandler<HTMLDivElement> = (e) => {
+    e.currentTarget.classList.add("opacity-50", "dragging");
   };
 
   const handleDragEnd: DragEventHandler<HTMLDivElement> = (e) => {
-    e.currentTarget.style.opacity = "1";
+    e.currentTarget.classList.remove("opacity-50", "dragging");
   };
 
   return (
@@ -55,25 +82,7 @@ const EditCarousel = ({
           {images.map((image, i) => (
             <div
               draggable={true}
-              onDragOver={(e) => {
-                e.preventDefault();
-                const { left, top, width } =
-                  e.currentTarget.getBoundingClientRect();
-
-                const dragImage: Image = JSON.parse(
-                  e.dataTransfer.getData("text/plain"),
-                );
-
-                if (e.clientX > left + width / 2) {
-                  const items = [...images];
-                  items.splice(i, 0, dragImage);
-                  setImages(items);
-                }
-              }}
-              onDragStart={(e) => {
-                e.currentTarget.style.opacity = "0.6";
-                e.dataTransfer.setData("text/plain", JSON.stringify(images[i]));
-              }}
+              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               key={image.url}
               className={`edit-item flex h-[300px] w-full items-center gap-4 hover:cursor-grab ${
