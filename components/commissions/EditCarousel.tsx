@@ -1,5 +1,4 @@
 import { Dispatch, DragEventHandler, SetStateAction } from "react";
-import { GrDrag } from "react-icons/gr";
 import { BsTrash3Fill } from "react-icons/bs";
 import { IoClose } from "react-icons/io5";
 import { MdImageNotSupported } from "react-icons/md";
@@ -26,26 +25,27 @@ const EditCarousel = ({
 }: Props) => {
   const handleDragOver: DragEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
-
-    const imagesCopy = [...images];
-    const draggedImageURL = document
-      .querySelector(".dragging")
-      ?.getAttribute("key");
-    const imgElements = Array.from(
-      document.querySelectorAll(".edit-item:not(.dragging)"),
-    );
+    e.dataTransfer.dropEffect = "move";
+    const draggedElement = document.querySelector(".dragging")!;
+    const imgElements = Array.from(document.querySelectorAll(".edit-item"));
+    const dragElementIdx = imgElements.findIndex((el) => el === draggedElement);
     const x = e.clientX;
     const y = e.clientY;
 
-    // i is the index where item is insertedBefore
     for (let i = 0; i < imgElements.length; i++) {
-      const imgElement = imgElements[i];
-      const { bottom, left, width } = imgElement.getBoundingClientRect();
+      if (i === dragElementIdx) {
+        continue;
+      }
 
-      if (y < bottom && x < left + width / 2) {
-        const removedImage = imagesCopy.splice(idx, 1)[0];
-        imagesCopy.splice(i, 0, removedImage);
-        setImages(imagesCopy);
+      const imgElement = imgElements[i];
+      const { bottom, left, right, top } = imgElement.getBoundingClientRect();
+
+      if (left <= x && x <= right && top <= y && y <= bottom) {
+        if (i > dragElementIdx) {
+          imgElement.after(draggedElement);
+        } else {
+          e.currentTarget.insertBefore(draggedElement, imgElement);
+        }
         return;
       }
     }
@@ -57,6 +57,23 @@ const EditCarousel = ({
 
   const handleDragEnd: DragEventHandler<HTMLDivElement> = (e) => {
     e.currentTarget.classList.remove("opacity-50", "dragging");
+  };
+
+  const handleOrderChange = () => {
+    const map = new Map<string, Image>();
+    const imgElements = Array.from(document.querySelectorAll(".edit-item img"));
+
+    images.forEach((img) => {
+      map.set(img.url, img);
+    });
+
+    setImages(
+      imgElements.map((el) => {
+        const key = el.getAttribute("src")!;
+        return map.get(key)!;
+      }),
+    );
+    closeModal();
   };
 
   return (
@@ -75,30 +92,41 @@ const EditCarousel = ({
         </button>
       </div>
       {images.length > 0 ? (
-        <div
-          className="grid grid-flow-row grid-cols-3 gap-10 p-5"
-          onDragOver={handleDragOver}
-        >
-          {images.map((image, i) => (
-            <div
-              draggable={true}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              key={image.url}
-              className={`edit-item flex h-[300px] w-full items-center gap-4 hover:cursor-grab ${
-                i < images.length - 1 && "mb-4"
-              }`}
-            >
-              <img
-                className="block h-full flex-1 rounded-[10px] border-[3px] border-dark-blue object-cover"
+        <>
+          <div
+            className="grid grid-flow-row grid-cols-3 gap-10 p-5"
+            onDragOver={handleDragOver}
+          >
+            {images.map((image, i) => (
+              <div
+                draggable={true}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
                 key={image.url}
-                src={image.url}
-                alt={`Edit Image ${image.url}`}
-              />
-              {/* <BsTrash3Fill className="h-5 w-5" onClick={() => removeImage(i)} /> */}
-            </div>
-          ))}
-        </div>
+                className={`edit-item flex h-[300px] w-full items-center gap-4 hover:cursor-grab ${
+                  i < images.length - 1 && "mb-4"
+                }`}
+              >
+                <img
+                  className="block h-full flex-1 rounded-[10px] border-[3px] border-dark-blue object-cover"
+                  src={image.url}
+                  alt={`Edit Image ${image.url}`}
+                />
+                {/* <BsTrash3Fill className="h-5 w-5" onClick={() => removeImage(i)} /> */}
+              </div>
+            ))}
+          </div>
+          <div className="absolute bottom-0 right-0 p-12">
+            <button
+              onClick={handleOrderChange}
+              type="button"
+              className="rounded-sm bg-dark-blue-highlight px-4 py-2 transition-all duration-100 ease-out
+                hover:bg-dark-blue-highlight"
+            >
+              Confirm Order
+            </button>
+          </div>
+        </>
       ) : (
         <div className="mt-[-100px] flex h-full flex-col items-center justify-center gap-5">
           <MdImageNotSupported size={125} />
