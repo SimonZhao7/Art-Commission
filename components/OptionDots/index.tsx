@@ -1,12 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-// Hooks
-import { useModal } from "@/hooks/useModal";
 // React Icons
 import { HiDotsHorizontal } from "react-icons/hi";
 import { BsFillTrash3Fill } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
 // Types
-import { OptionDotsComponent, Pos } from "./types";
+import { OptionDotsComponent } from "./types";
 import { useTrackingModal } from "@/hooks/useTrackingModal";
 
 const modalBtnStyle =
@@ -15,6 +12,9 @@ const modalBtnStyle =
 const OptionDots: OptionDotsComponent = ({
   handleEditClick,
   handleDeleteClick,
+  offsetTop = 30,
+  offsetLeft = 0,
+  iconSize = 20,
 }) => {
   const {
     modalOpen,
@@ -23,7 +23,8 @@ const OptionDots: OptionDotsComponent = ({
     modal,
     parent: optionsBtn,
   } = useTrackingModal<HTMLButtonElement, HTMLDivElement>({
-    offsetTop: 30,
+    offsetLeft,
+    offsetTop,
   });
 
   return (
@@ -36,7 +37,7 @@ const OptionDots: OptionDotsComponent = ({
         }}
         ref={optionsBtn}
       >
-        <HiDotsHorizontal size={20} />
+        <HiDotsHorizontal size={iconSize} />
       </button>
       {modalOpen && optionsBtn.current && (
         <div

@@ -1,8 +1,12 @@
 import { Dispatch, DragEventHandler, SetStateAction } from "react";
-import { BsTrash3Fill } from "react-icons/bs";
+// React Icons
 import { IoClose } from "react-icons/io5";
 import { MdImageNotSupported } from "react-icons/md";
+// Components
+import OptionDots from "../OptionDots";
+// Types
 import { Image } from "@/types/commission";
+// Framer Motion
 import { motion, Variants } from "framer-motion";
 
 interface Props {
@@ -103,7 +107,7 @@ const EditCarousel = ({
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 key={image.url}
-                className={`edit-item flex h-[300px] w-full items-center gap-4 hover:cursor-grab ${
+                className={`edit-item relative flex h-[300px] w-full items-center gap-4 hover:cursor-grab ${
                   i < images.length - 1 && "mb-4"
                 }`}
               >
@@ -112,7 +116,14 @@ const EditCarousel = ({
                   src={image.url}
                   alt={`Edit Image ${image.url}`}
                 />
-                {/* <BsTrash3Fill className="h-5 w-5" onClick={() => removeImage(i)} /> */}
+                <div className="absolute bottom-3 right-3">
+                  <OptionDots
+                    offsetTop={-90}
+                    offsetLeft={-90}
+                    handleDeleteClick={() => removeImage(i)}
+                    handleEditClick={() => {}}
+                  />
+                </div>
               </div>
             ))}
           </div>
