@@ -32,21 +32,7 @@ export default function ImageCarousel({
 }: Props) {
   const [index, setIndex] = useState(0);
   const [editOpen, setEditOpen] = useState(false);
-  const [dragImages, setDragImages] = useState<Image[]>(images);
   const fileRef = useRef<HTMLInputElement | null>(null);
-
-  const items = document.getElementsByClassName("edit-item");
-
-  useEffect(() => {
-    const handleDragStart = (e: Event) => {};
-
-    const handleDragEnd = () => {};
-
-    for (let i = 0; i < items.length; i++) {
-      items[i].addEventListener("dragstart", handleDragStart);
-      items[i].addEventListener("dragend", handleDragEnd);
-    }
-  }, []);
 
   useEffect(() => {
     if (images.length > 0) {
@@ -55,7 +41,7 @@ export default function ImageCarousel({
       }, 5000);
       return () => clearInterval(intervalId);
     }
-  }, [index]);
+  }, [index, images]);
 
   const closeModal = () => setEditOpen(false);
 
@@ -145,7 +131,8 @@ export default function ImageCarousel({
         ref={fileRef}
         type="file"
         className="hidden"
-        accept=".jpg,.png"
+        accept="image/*"
+        multiple={true}
         onChange={handleFileUpload}
       />
       <AnimatePresence>

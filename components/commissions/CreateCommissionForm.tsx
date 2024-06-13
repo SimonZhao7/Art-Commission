@@ -25,6 +25,8 @@ import { CreateCommissionContext } from "./CreateCommissionContext";
 // Types
 import { Image, CreateCommissionFormFields, AddOn } from "@/types/commission";
 
+const MAX_IMAGES = 5;
+
 const CreateCommissionForm = () => {
   const formMethods = useForm<CreateCommissionFormFields>({
     mode: "onBlur",
@@ -50,11 +52,17 @@ const CreateCommissionForm = () => {
 
   const handleFileUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
     const fileList = e.target.files!;
-    if (fileList.length > 0 && images.length < 5) {
-      const newFile = fileList[0];
-      const tempURL = URL.createObjectURL(newFile);
-      setImages([...images, { url: tempURL, image: newFile }]);
+    if (fileList.length === 0) {
+      return;
     }
+
+    const imgLen = images.length;
+    for (let i = 0; i < MAX_IMAGES - imgLen; i++) {
+      const newFile = fileList[i];
+      const tempURL = URL.createObjectURL(newFile);
+      images.push({ url: tempURL, image: newFile });
+    }
+    setImages([...images]);
   };
 
   const handleIdxChange = (idx: number) => {

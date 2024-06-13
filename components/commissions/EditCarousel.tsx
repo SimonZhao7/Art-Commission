@@ -3,7 +3,7 @@ import { Dispatch, DragEventHandler, SetStateAction } from "react";
 import { IoClose } from "react-icons/io5";
 import { MdImageNotSupported } from "react-icons/md";
 // Components
-import OptionDots from "../OptionDots";
+import DraggableEditImage from "./DraggableEditImage";
 // Types
 import { Image } from "@/types/commission";
 // Framer Motion
@@ -55,14 +55,6 @@ const EditCarousel = ({
     }
   };
 
-  const handleDragStart: DragEventHandler<HTMLDivElement> = (e) => {
-    e.currentTarget.classList.add("opacity-50", "dragging");
-  };
-
-  const handleDragEnd: DragEventHandler<HTMLDivElement> = (e) => {
-    e.currentTarget.classList.remove("opacity-50", "dragging");
-  };
-
   const handleOrderChange = () => {
     const map = new Map<string, Image>();
     const imgElements = Array.from(document.querySelectorAll(".edit-item img"));
@@ -102,29 +94,12 @@ const EditCarousel = ({
             onDragOver={handleDragOver}
           >
             {images.map((image, i) => (
-              <div
-                draggable={true}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
+              <DraggableEditImage
                 key={image.url}
-                className={`edit-item relative flex h-[300px] w-full items-center gap-4 hover:cursor-grab ${
-                  i < images.length - 1 && "mb-4"
-                }`}
-              >
-                <img
-                  className="block h-full flex-1 rounded-[10px] border-[3px] border-dark-blue object-cover"
-                  src={image.url}
-                  alt={`Edit Image ${image.url}`}
-                />
-                <div className="absolute bottom-3 right-3">
-                  <OptionDots
-                    offsetTop={-90}
-                    offsetLeft={-90}
-                    handleDeleteClick={() => removeImage(i)}
-                    handleEditClick={() => {}}
-                  />
-                </div>
-              </div>
+                i={i}
+                image={image}
+                removeImage={removeImage}
+              />
             ))}
           </div>
           <div className="absolute bottom-0 right-0 p-12">
