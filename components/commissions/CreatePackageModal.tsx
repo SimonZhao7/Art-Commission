@@ -85,7 +85,7 @@ const CreatePackageModal = ({ closeModal, editIdx }: Props) => {
       }
       const url = URL.createObjectURL(file);
       setValuePackage("image", {
-        file,
+        image: file,
         url,
       });
     }

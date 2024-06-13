@@ -24,7 +24,7 @@ export const CreatePackageSchema = z.object({
     .gt(0, "Commission package can not take 0 days"),
   image: z
     .object({
-      file: z.instanceof(File),
+      image: z.instanceof(File),
       url: z.string(),
     })
     .optional(),

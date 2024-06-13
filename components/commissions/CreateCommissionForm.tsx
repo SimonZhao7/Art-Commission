@@ -1,7 +1,8 @@
+import { useRouter } from "next/router";
 import { ChangeEventHandler, useState } from "react";
 // React Hook Form
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
 // Schemas
 import CreateCommissionSchema from "@/lib/schemas/CreateCommissionSchema";
 // Components
@@ -13,8 +14,13 @@ import PackageRow from "@/components/commissions/PackageRow";
 import ImageCarousel from "@/components/commissions/ImageCarousel";
 // Hooks
 import { useModal } from "@/hooks/useModal";
+import { useAuth } from "@/hooks/useFirebaseUser";
 // React Icons
 import { FaPlus } from "react-icons/fa6";
+// Firebase
+import { db, storage } from "@/firebase";
+import { addDoc, collection } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 // Framer Motion
 import { AnimatePresence } from "framer-motion";
 // Markdown
@@ -38,7 +44,7 @@ const CreateCommissionForm = () => {
       packages: [],
     },
   });
-  const { watch, register, setValue, getValues } = formMethods;
+  const { watch, register, setValue, getValues, handleSubmit } = formMethods;
   const { title, description } = watch();
   const {
     modalOpen: createPackageModalOpen,
@@ -49,6 +55,8 @@ const CreateCommissionForm = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [addOns, setAddOns] = useState<AddOn[]>([]);
   const [editIdx, setEditIdx] = useState(-1);
+  const router = useRouter();
+  const user = useAuth();
 
   const handleFileUpload: ChangeEventHandler<HTMLInputElement> = (e) => {
     const fileList = e.target.files!;
@@ -70,6 +78,58 @@ const CreateCommissionForm = () => {
     openCreatePackageModal();
   };
 
+  const addDocs = (items: any[], collectionName: string) => {
+    return Promise.all(
+      items.map((item) => {
+        return addDoc(collection(db, collectionName), item);
+      }),
+    ).then((refs) => {
+      return refs.map((ref) => ref.id);
+    });
+  };
+
+  const uploadImage = (image: Image, bucketName: string) => {
+    const { image: file } = image;
+    const imgRef = ref(
+      storage,
+      `${bucketName}/${crypto.randomUUID()}-${file.name}`,
+    );
+    return uploadBytes(imgRef, file).then(() => getDownloadURL(imgRef));
+  };
+
+  const onSubmit: SubmitHandler<CreateCommissionFormFields> = async (data) => {
+    if (!user) {
+      return;
+    }
+
+    const bucketName = "commission-images";
+    const { description, packages, title, visible } = data;
+    const sampleUrls = await Promise.all(
+      images.map((img) => uploadImage(img, bucketName)),
+    );
+    const updatedPacakges = await Promise.all(
+      packages.map((pkg) => ({
+        ...pkg,
+        image: pkg.image ? uploadImage(pkg.image, bucketName) : "",
+      })),
+    );
+    const packageIds = await addDocs(updatedPacakges, "packages");
+    const addOnIds = await addDocs(addOns, "addons");
+
+    const commission = {
+      userId: user.id,
+      addOns: addOnIds,
+      tags,
+      visible,
+      title,
+      description,
+      samples: sampleUrls,
+      packages: packageIds,
+    };
+    await addDoc(collection(db, "commissions"), commission);
+    router.push("/commissions");
+  };
+
   return (
     <FormProvider {...formMethods}>
       <CreateCommissionContext.Provider
@@ -77,7 +137,10 @@ const CreateCommissionForm = () => {
           setEditIdx: handleIdxChange,
         }}
       >
-        <form className="mx-auto pb-20 text-dark-gray">
+        <form
+          className="mx-auto pb-20 text-dark-gray"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <HeaderTitleInput />
           <section className={"flex w-screen gap-10 px-14 font-montserrat"}>
             <div className="w-3/5">
